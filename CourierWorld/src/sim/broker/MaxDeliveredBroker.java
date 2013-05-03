@@ -8,6 +8,6 @@ package sim.broker;
  * This broker ensures that the packages are delivered by using a Dutch auction
  * @author drew
  */
-public class MaxDeliveredBroker {
+public class MaxDeliveredBroker implements Broker{
     
 }

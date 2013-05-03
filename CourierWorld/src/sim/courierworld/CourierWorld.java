@@ -23,9 +23,9 @@ import sim.util.Bag;
  */
 public class CourierWorld extends SimState {
 
+    public int gridSize = 500;
     public Network world = new Network(false);
-    public SparseGrid2D grid = new SparseGrid2D(500, 500);
-    private int max_packages;
+    public SparseGrid2D grid = new SparseGrid2D(gridSize, gridSize);
 
     public enum WorldProperties {
 
@@ -34,17 +34,20 @@ public class CourierWorld extends SimState {
         numGlobalCouriers,
         numHubs,
         distFromHubs,
-        decayRate,
-        max_packages
+        numLocalNode;
     };
     public int numberNodes = 1000;      // number of communities other than hubs
     public int numSmallCouriers = 100; // number of couriers that can transport packages cost effectively between nonhubs
     public int numGlobalCouriers = 10; // number of couriers that can transport packages cost effectively between hubs and 
     public int numHubs = 10;            // number of hubs in the network
     public int distFromHubs = 10; // minimum distance between hubs
-    public List<Node> hubs;
-    public PackageGenerator pGen;
-    public double decayRate;
+    public int numLocalNode = 100;
+    public int numMaxPkgs = 100;
+    public int localCliqueSize = 50;
+    public int hubNhbrSize = 20; 
+    //public List<Node> hubs;
+    //public PackageGenerator pGen;
+    //public double decayRate;
 
     public CourierWorld(long seed) {
         super(seed);
@@ -52,7 +55,7 @@ public class CourierWorld extends SimState {
 
     public void start() {
         super.start();
-        
+
 
         // Need to load params from file
         Properties prop = new Properties();
@@ -72,9 +75,6 @@ public class CourierWorld extends SimState {
                     case numGlobalCouriers:
                         numGlobalCouriers = Integer.parseInt(prop.getProperty(propName));
                         break;
-                    case decayRate:
-                        decayRate = Double.valueOf(prop.getProperty(propName));
-                        break;
                     case distFromHubs:
                         distFromHubs = Integer.parseInt(prop.getProperty(propName));
                         break;
@@ -84,9 +84,8 @@ public class CourierWorld extends SimState {
                     case numSmallCouriers:
                         numSmallCouriers = Integer.parseInt(prop.getProperty(propName));
                         break;
-                    case max_packages:
-                        max_packages = Integer.parseInt(prop.getProperty(propName));
-                        break;
+                    case numLocalNode:
+                        numLocalNode = Integer.parseInt(prop.getProperty(propName));
                     default:
                         System.out.println("property: " + propName + " not an understood property");
                         break;
@@ -95,61 +94,34 @@ public class CourierWorld extends SimState {
 
 
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
-            e.printStackTrace();
         }
 
-        
+
         // clear the world!
-        /*
-         world.clear();
-         grid.clear();
-         hubs = new ArrayList<>();
 
-         pGen = new PackageGenerator(numHubs, numGlobalCouriers, numSmallCouriers);
-
-         // build the network
-         // while building the agents cost overlay
-         for (int i = 0; i < numHubs; i++) {
-         // build a "hub" in the network and insert the node into the grid
-         Node curHub = new Node();
-         world.addNode(curHub);
-         hubs.add(curHub);
-
-         boolean added = false;
-         while (added == false) {
-         int randx = random.nextInt(grid.getWidth());
-         int randy = random.nextInt(grid.getHeight());
-         Bag res = new Bag();
-         res = grid.getMooreNeighbors(randx, randy, distFromHubs, Grid2D.BOUNDED, res, null, null);
-
-         if (res.isEmpty()) {
-         // add the node to randx, randy
-         grid.setObjectLocation(curHub, randx, randy);
-         added = true;
-         }
-         }
-         }
-
-         // link the hubs 
-         for (Node n : hubs) {
-         int numLinks = random.nextInt(numHubs - 2) + 2;
-
-         }
+        world.clear();
+        grid.clear();
+        
+        int userIndex = 0;
+        for (int i = 0; i < numHubs; i++)
+        {            
+            Hub h = new Hub(this, userIndex);            
+        }
+        
+ 
 
 
 
+        // build the two brokers
 
-         // build the two brokers
-
-         // build the couriers
+        // build the couriers
 
 
-         // schedule the package generator
-         schedule.scheduleOnce(new PackageGenerator(numHubs, numGlobalCouriers, numSmallCouriers), 0);
-         // schedule the couriers
-         */
+        // schedule the package generator
+        schedule.scheduleOnce(new PackageGenerator(numHubs, numGlobalCouriers, numSmallCouriers), 0);
+        // schedule the couriers
+
     }
 
     public static void main(String[] args) {

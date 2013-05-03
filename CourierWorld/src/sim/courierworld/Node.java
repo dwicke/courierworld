@@ -18,12 +18,19 @@ import sim.user.User;
 public class Node implements Steppable{
     
     private User user;
+    private Hub hub;
     private List<Courier> couriers;
+    private boolean isHub;
 
-    public Node(User user, List<Courier> couriers) {
+    public Node(User user) {
         this.user = user;
-        this.couriers = couriers;
     }    
+
+    Node(Hub hub) {
+        isHub = true;
+        this.hub = hub;
+        
+    }
 
     @Override
     public void step(SimState state) {
@@ -31,6 +38,10 @@ public class Node implements Steppable{
         Courier chosen = user.chooseCourier(couriers);
         
         
+    }
+
+    boolean isHub() {
+        return isHub; //To change body of generated methods, choose Tools | Templates.
     }
     
     

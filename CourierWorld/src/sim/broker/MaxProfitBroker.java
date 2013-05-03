@@ -14,7 +14,7 @@ import sim.courierworld.Node;
  * auction.
  * @author drew
  */
-public class MaxProfitBroker implements Appraiser<Package> {
+public class MaxProfitBroker implements Appraiser<Package>, Broker {
 
     
     
