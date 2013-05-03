@@ -27,7 +27,7 @@ public class Node implements Steppable{
 
     @Override
     public void step(SimState state) {
-        user.generateNodePackage();
+        user.generatePackages();
         Courier chosen = user.chooseCourier(couriers);
         
         
