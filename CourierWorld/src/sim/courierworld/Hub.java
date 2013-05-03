@@ -23,16 +23,14 @@ public class Hub {
     public List<Courier> localCouriers;// the couriers in the local substrate of this hub
     public List<Broker> brokers; // the local brokers for this hub
 
-    public Hub() {
-        this.globalCouriers = globalCouriers;
-        this.localCouriers = localCouriers;
-        this.brokers = brokers;
-    }
+    
 
     Hub(CourierWorld state, int useIndex) {
         boolean isAdded = false;
         int randx = 0, randy = 0;
         
+        // first we generate an (x,y) coordinate for the hub
+        // ensuring that it is the correct distance away from other hubs
         while(!isAdded)
         {
             isAdded = true;
@@ -54,12 +52,16 @@ public class Hub {
                 }
             }
         }
+        // we create a node to hold this (the network is filled only user nodes
+        // and hub nodes)
         Node hubNode = new Node(this);
-        
+        // add the hub to the grid and the network
         state.grid.setObjectLocation(hubNode, randx, randy);
         state.world.addNode(hubNode);
 
-        
+        // Now we are going to create the local cliques
+        // specific to the hub.  These nodes are user nodes
+        // they will eventually have couriers.
         double probGenNode = 0.8;
         for (int i = 0; i < state.numLocalNode; i++)
         {
