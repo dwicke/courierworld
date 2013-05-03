@@ -24,7 +24,6 @@ import sim.util.Bag;
 public class CourierWorld extends SimState {
 
     public int gridSize = 500;
-    public Network world = new Network(false);
     public SparseGrid2D grid = new SparseGrid2D(gridSize, gridSize);
 
     public enum WorldProperties {
@@ -100,7 +99,6 @@ public class CourierWorld extends SimState {
 
         // clear the world!
 
-        world.clear();
         grid.clear();
         
         int userIndex = 0;

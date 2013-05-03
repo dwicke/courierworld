@@ -57,7 +57,7 @@ public class Hub {
         Node hubNode = new Node(this);
         // add the hub to the grid and the network
         state.grid.setObjectLocation(hubNode, randx, randy);
-        state.world.addNode(hubNode);
+ 
 
         // Now we are going to create the local cliques
         // specific to the hub.  These nodes are user nodes
@@ -67,19 +67,32 @@ public class Hub {
         {
             if (state.random.nextDouble() < probGenNode)
             {
-                User user = new User(state.numMaxPkgs, useIndex);
+                User user = new User(state.numMaxPkgs, useIndex,hubNode);
                 Node userNode = new Node(user);
                 
                 int nodex = -1, nodey = -1;
+
                 while(!(nodex >= 0 && nodex < state.grid.getWidth() && nodey >= 0 && nodey < state.grid.getHeight()))
                 {
                     nodex = randx  +  (int)((1.0 - 2.0*state.random.nextDouble()) * state.localCliqueSize);
                     nodey = randy  +  (int)((1.0 - 2.0*state.random.nextDouble()) * state.localCliqueSize);
+                    
+                    if(!(state.grid.getObjectsAtLocation(nodex, nodey).isEmpty()))
+                    {
+                        nodex = -1;//to look for another location
+                    }
                 }
                 
+                state.grid.setObjectLocation(userNode, nodex, nodey);
                 useIndex++;
-            }
+            }        
+            
+            
         }
+        
+        
+        
+        
         
         
     }
