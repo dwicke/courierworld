@@ -25,6 +25,7 @@ public class CourierWorld extends SimState {
 
     public Network world = new Network(false);
     public SparseGrid2D grid = new SparseGrid2D(500, 500);
+    private int max_packages;
 
     public enum WorldProperties {
 
@@ -33,7 +34,8 @@ public class CourierWorld extends SimState {
         numGlobalCouriers,
         numHubs,
         distFromHubs,
-        decayRate
+        decayRate,
+        max_packages
     };
     public int numberNodes = 1000;      // number of communities other than hubs
     public int numSmallCouriers = 100; // number of couriers that can transport packages cost effectively between nonhubs
@@ -50,7 +52,7 @@ public class CourierWorld extends SimState {
 
     public void start() {
         super.start();
-
+        
 
         // Need to load params from file
         Properties prop = new Properties();
@@ -81,6 +83,9 @@ public class CourierWorld extends SimState {
                         break;
                     case numSmallCouriers:
                         numSmallCouriers = Integer.parseInt(prop.getProperty(propName));
+                        break;
+                    case max_packages:
+                        max_packages = Integer.parseInt(prop.getProperty(propName));
                         break;
                     default:
                         System.out.println("property: " + propName + " not an understood property");
