@@ -4,10 +4,15 @@
  */
 package sim.courier;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import sim.auction.DutchBidder;
 import sim.auction.EnglishBidder;
 import sim.auction.Item;
+import sim.courierworld.Node;
+import sim.courierworld.NodeKey;
 import sim.engine.SimState;
 import sim.engine.Steppable;
 import sim.field.network.Edge;
@@ -19,16 +24,24 @@ import sim.field.network.Edge;
 public class Courier implements DutchBidder, EnglishBidder, Steppable{
 
     
-    private int profit;
-    // map the edges to costs
-    private HashMap<Edge, Integer> myNetwork;
     
-    public Courier()
+    private int profit;
+    private boolean isGlobal;
+    // map the edges to costs
+    private HashMap<NodeKey, Double> myNetwork;
+    private List<Node> sourceNode;
+    
+    public Courier(boolean  isGlobal)
     {
         myNetwork = new HashMap<>();
+        sourceNode = new ArrayList<>(); 
+        this.isGlobal = isGlobal;
     }
     
-    
+    public void insertKeyValPair(NodeKey k, double weight)
+    {
+        myNetwork.put(k, weight);
+    }
     
     
     @Override
@@ -55,5 +68,20 @@ public class Courier implements DutchBidder, EnglishBidder, Steppable{
         // use 1 since after packagegenerator
         state.schedule.scheduleOnce(this, 1);
     }
+
+    public HashMap<NodeKey, Double> getMap() {
+       return myNetwork;
+    }
+
+    public void addSource(Node userNode) {
+        sourceNode.add(userNode);
+    }
+    public List<Node> getSourceNodes()
+    {
+        return sourceNode;
+    }
+   
+
+   
     
 }

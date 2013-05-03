@@ -4,6 +4,7 @@
  */
 package sim.courierworld;
 
+import java.util.ArrayList;
 import java.util.List;
 import sim.courier.Courier;
 import sim.engine.SimState;
@@ -24,12 +25,25 @@ public class Node implements Steppable{
 
     public Node(User user) {
         this.user = user;
+        couriers = new ArrayList<>();
+        isHub = false;
+        
     }    
 
     Node(Hub hub) {
         isHub = true;
         this.hub = hub;
-        
+        couriers = new ArrayList<>();
+    }
+    
+    public void addCourier(Courier c)
+    {
+        this.couriers.add(c);
+    }
+    
+    public int getNumCouriers()
+    {
+        return couriers.size();
     }
 
     @Override

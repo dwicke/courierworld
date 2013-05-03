@@ -11,6 +11,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import sim.courier.Courier;
 import sim.engine.SimState;
 import sim.field.grid.Grid2D;
 import sim.field.grid.SparseGrid2D;
@@ -25,6 +26,8 @@ public class CourierWorld extends SimState {
 
     public int gridSize = 500;
     public SparseGrid2D grid = new SparseGrid2D(gridSize, gridSize);
+    public int minNumCouriersPerNode = 2;
+    public List<Courier> globalCourierList;
 
     public enum WorldProperties {
 
@@ -41,9 +44,15 @@ public class CourierWorld extends SimState {
     public int numHubs = 10;            // number of hubs in the network
     public int distFromHubs = 10; // minimum distance between hubs
     public int numLocalNode = 100;
+    public int numGlobCourierPerHub = 4;
     public int numMaxPkgs = 100;
     public int localCliqueSize = 50;
     public int hubNhbrSize = 20; 
+    public int maxNumCouriersPerHub = 10;
+    public int maxNumCouriersPerNode = 5;
+    public double maxWeight = 1;
+    public double minWeight = 0;
+    public double minViableWeight = 0.2;
     //public List<Node> hubs;
     //public PackageGenerator pGen;
     //public double decayRate;
@@ -102,6 +111,10 @@ public class CourierWorld extends SimState {
         grid.clear();
         
         int userIndex = 0;
+        for(int i = 0; i < numGlobalCouriers; i++)
+        {
+            Courier gc = new Courier(true);
+        }
         for (int i = 0; i < numHubs; i++)
         {            
             Hub h = new Hub(this, userIndex);            
