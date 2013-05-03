@@ -40,6 +40,10 @@ public class CourierWorld extends SimState{
     {
         super.start();
         
+        
+        // Need to load params from file
+        
+        
         // clear the world!
         world.clear();
         grid.clear();
