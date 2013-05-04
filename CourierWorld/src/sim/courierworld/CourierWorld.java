@@ -39,21 +39,22 @@ public class CourierWorld extends SimState {
         numLocalNode;
     };
     public int numberNodes = 1000;      // number of communities other than hubs
-    public int numSmallCouriers = 100; // number of couriers that can transport packages cost effectively between nonhubs
+    public int numSmallCouriers = 200; // number of couriers that can transport packages cost effectively between nonhubs
     public int numGlobalCouriers = 10; // number of couriers that can transport packages cost effectively between hubs and 
     public int numHubs = 10;            // number of hubs in the network
     public int distFromHubs = 10; // minimum distance between hubs
     public int numLocalNode = 100;
-    public int numGlobCourierPerHub = 4;
+    public int numMaxGlobCourierPerHub = 4;
+    public int numMinGlobCourierPerHub = 2;
     public int numMaxPkgs = 100;
-    public int localCliqueSize = 50;
+    public int localCliqueSize = 50; //radius of the cliques
     public int hubNhbrSize = 20; 
-    public int maxNumCouriersPerHub = 10;
+    public int maxNumCouriersPerHub = 10;//maxNumCouriersPerHub < minNumCouriersPerNode*numLocalNode
     public int maxNumCouriersPerNode = 5;
     public double maxWeight = 1;
     public double minWeight = 0;
     public double minViableWeight = 0.2;
-    //public List<Node> hubs;
+    public List<Node> hubs;
     //public PackageGenerator pGen;
     //public double decayRate;
 
@@ -111,14 +112,21 @@ public class CourierWorld extends SimState {
         grid.clear();
         
         int userIndex = 0;
+        //srtup global courier
         for(int i = 0; i < numGlobalCouriers; i++)
         {
             Courier gc = new Courier(true);
+            globalCourierList.add(gc);
         }
+        hubs = new ArrayList<>();
+        //initialize the hubs and local couriers inside it
         for (int i = 0; i < numHubs; i++)
         {            
-            Hub h = new Hub(this, userIndex);            
+            Hub h = new Hub(this, userIndex);
+            hubs.add(h.myNode);
         }
+        //setup the cost network for the global courier
+        
         
  
 
