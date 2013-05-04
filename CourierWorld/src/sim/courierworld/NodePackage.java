@@ -5,48 +5,56 @@
 package sim.courierworld;
 
 import java.util.HashMap;
+import java.util.Map.Entry;
 
 /**
  * Package generator generates
  *
  * @author drew
  */
-public class NodePackage
-{
+public class NodePackage {
 
     PriorityGroups priorityGroups[];
 
-    public NodePackage()
-    {
+    public NodePackage() {
         priorityGroups = new PriorityGroups[3];
     }
 
-    public void add(Packages packages)
-    {
+    public void add(Packages packages) {
         priorityGroups[packages.priority.ordinal()].addPackage(packages);
     }
 
-    public boolean isEmpty()
-    {
-       for(int i = 0; i < priorityGroups.length; i++)
-       {
-           if(!priorityGroups[i].packages.isEmpty())
-           {
-               return true;
-           }
-       }
-       
-       return false;
+    public boolean isEmpty() {
+        for (int i = 0; i < priorityGroups.length; i++) {
+            if (!priorityGroups[i].packages.isEmpty()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
-    public class PriorityGroups
-    {
+    public void addAll(NodePackage myPackages) {
+        for (int i = 0; i < myPackages.priorityGroups.length; i++) {
+            priorityGroups[i].combine(myPackages.priorityGroups[i].packages);
+        }
+    }
+
+    public class PriorityGroups {
 
         HashMap<Node, Packages> packages = new HashMap<>();
 
-        public void addPackage(Packages pack)
-        {
+        public void addPackage(Packages pack) {
             packages.put(pack.destNode, pack.stack(packages.get(pack.destNode)));
         }
+        
+        public void combine(HashMap<Node, Packages> packs)
+        {
+            for (Entry<Node, Packages> en : packs.entrySet())
+            {
+                addPackage(en.getValue());
+            }
+        }
+        
     }
 }

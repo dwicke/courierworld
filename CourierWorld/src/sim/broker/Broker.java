@@ -4,20 +4,40 @@
  */
 package sim.broker;
 
+import sim.auction.Appraiser;
 import sim.courierworld.NodePackage;
 
 /**
  *
  * @author indranil
  */
-public interface Broker {
+public abstract class Broker implements Appraiser<NodePackage>{
 
-    public double getQuote(NodePackage myPackages);
+    private double defaultRate = 0.0;
+    private double profit = 0.0;
+    private NodePackage myPackages = new NodePackage();
+    
+    public abstract double getQuote(NodePackage myPackages);
 
-    public double getDefaultRate();
+    /**
+     * Returns the percentage of packages the broker
+     * has lost.
+     * @return 
+     */
+    public double getDefaultRate()
+    {
+        return defaultRate;
+    }
 
-    public int getSuccessRate();
-
-    public void addPackage(NodePackage myPackages, double d);
+    /**
+     * Combines the packages in myPackages with the Broker's packages
+     * @param myPackages
+     * @param fee
+     */
+    public void addPackage(NodePackage myPackages, double fee)
+    {
+        this.myPackages.addAll(myPackages);
+        profit += fee;
+    }
     
 }

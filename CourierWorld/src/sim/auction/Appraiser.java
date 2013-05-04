@@ -9,5 +9,5 @@ package sim.auction;
  * @author drew
  */
 public interface Appraiser<T> {
-    public int getEstValue(Item<T> i);
+    public double getEstValue(Item<T> i); // how much the item is worth 
 }

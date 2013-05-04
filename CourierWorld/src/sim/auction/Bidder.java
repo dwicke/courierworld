@@ -15,5 +15,5 @@ interface Bidder {
      * @param charge
      * @param item 
      */
-    public void doTransaction(int charge, Item item);
+    public void doTransaction(double charge, Item item);
 }

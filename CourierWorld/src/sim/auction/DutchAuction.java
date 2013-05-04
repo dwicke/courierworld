@@ -38,13 +38,13 @@ public class DutchAuction {
      */
     public int doAuction(Appraiser apr, MersenneTwisterFast rand)
     {
-        int decrementVal = 1;
+        double decrementVal = 1;
         int profit = 0;
         ListIterator<Item> it = items.listIterator();
         while(it.hasNext())
         {
             Item item = it.next();
-            int val = apr.getEstValue(item);
+            double val = apr.getEstValue(item);
             boolean hasBid = true;
             List<DutchBidder> poswinners = new ArrayList<>();
             

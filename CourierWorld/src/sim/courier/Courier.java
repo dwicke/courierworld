@@ -98,14 +98,14 @@ public class Courier implements DutchBidder, EnglishBidder, Steppable
     }
 
     @Override
-    public boolean getDutchBid(int val, Item item)
+    public boolean getDutchBid(double val, Item item)
     {
         //To change body of generated methods, choose Tools | Templates.
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public void doTransaction(int charge, Item item)
+    public void doTransaction(double charge, Item item)
     {
         //To change body of generated methods, choose Tools | Templates.
         throw new UnsupportedOperationException("Not supported yet.");
@@ -159,12 +159,12 @@ public class Courier implements DutchBidder, EnglishBidder, Steppable
 
     public void sendPackageToBroker(List<Broker> brokers)
     {
-        
         if (!myPackages.isEmpty())
         {
             Broker bestBroker = null;
             double bestQuote = -1;
 
+            // for each of the brokers get a quote
             for (Broker b : brokers)
             {
                 double quote = b.getQuote(myPackages);
@@ -181,9 +181,12 @@ public class Courier implements DutchBidder, EnglishBidder, Steppable
                 }
             }
 
+            // give teh broker his fee and the packages
             if (bestBroker != null)
             {
-                bestBroker.addPackage(myPackages, bestQuote / (1.0 - policy + policy * (1 - bestBroker.getSuccessRate())));
+                bestBroker.addPackage(myPackages, bestQuote / (1.0 - policy + policy * (1 - bestBroker.getDefaultRate())));
+                // i have to reset myPackages I have given them to the broker
+                myPackages = new NodePackage();
             }
         }
     }

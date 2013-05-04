@@ -7,6 +7,7 @@ package sim.broker;
 import sim.auction.Appraiser;
 import sim.auction.Item;
 import sim.courierworld.Node;
+import sim.courierworld.NodePackage;
 
 /**
  * This broker doesn't care about its client and getting the package delivered
@@ -14,16 +15,20 @@ import sim.courierworld.Node;
  * auction.
  * @author drew
  */
-public class MaxProfitBroker implements Appraiser<Package>, Broker {
+public class MaxProfitBroker extends Broker {
 
-    
-    
-    
     @Override
-    public int getEstValue(Item i) {
+    public double getEstValue(Item i) {
         //To change body of generated methods, choose Tools | Templates.
         // need to factor in the average life of the packs
         throw new UnsupportedOperationException("Not supported yet.");
     }
+
+    @Override
+    public double getQuote(NodePackage myPackages) {
+        
+    }
+
+    
     
 }

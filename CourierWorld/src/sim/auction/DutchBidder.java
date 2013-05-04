@@ -15,5 +15,5 @@ public interface DutchBidder extends Bidder{
      * @param item - the item being bid on
      * @return 
      */
-    public boolean getDutchBid(int val, Item item);
+    public boolean getDutchBid(double val, Item item);
 }
