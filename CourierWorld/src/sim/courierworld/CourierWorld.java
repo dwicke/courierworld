@@ -34,17 +34,26 @@ public class CourierWorld extends SimState implements Steppable
     @Override
     public void step(SimState state)
     {
-        for(int i = 0; i < grid.allObjects.numObjs; i++)
+        //user to local courier
+        for (int i = 0; i < grid.allObjects.numObjs; i++)
         {
             Node node = (Node) grid.allObjects.objs[i];
-            
+
             if (!node.isHub())
             {
                 // generate a package                
                 node.userToCourier(this);
-            }            
-        }      
-        
+            }
+        }
+
+        for (Node hubnode : hubNodes)
+        {
+            for(Courier cour : hubnode.getHub().localCouriers)
+            {
+                cour.sendPackageToBroker(hubnode.getHub().brokers);
+            }
+        }
+
     }
 
     public enum WorldProperties
@@ -57,7 +66,8 @@ public class CourierWorld extends SimState implements Steppable
         distFromHubs,
         numLocalNode;
     };
-    public double maxPolicyVal = 0.5;    public int numberNodes = 1000;      // number of communities other than hubs
+    public double maxPolicyVal = 0.5;
+    public int numberNodes = 1000;      // number of communities other than hubs
     public int numSmallCouriers = 200; // number of couriers that can transport packages cost effectively between nonhubs
     public int numGlobalCouriers = 10; // number of couriers that can transport packages cost effectively between hubs and 
     public int numHubs = 10;            // number of hubs in the network

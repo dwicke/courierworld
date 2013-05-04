@@ -26,6 +26,19 @@ public class NodePackage
         priorityGroups[packages.priority.ordinal()].addPackage(packages);
     }
 
+    public boolean isEmpty()
+    {
+       for(int i = 0; i < priorityGroups.length; i++)
+       {
+           if(!priorityGroups[i].packages.isEmpty())
+           {
+               return true;
+           }
+       }
+       
+       return false;
+    }
+
     public class PriorityGroups
     {
 

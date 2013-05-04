@@ -46,6 +46,10 @@ public class Node{
         return couriers.size();
     }
 
+    public Hub getHub()
+    {
+        return hub;
+    }
 
     public boolean isHub() {
         return isHub; //To change body of generated methods, choose Tools | Templates.
