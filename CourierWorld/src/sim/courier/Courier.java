@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import javax.swing.text.html.parser.Entity;
 import sim.auction.DutchBidder;
 import sim.auction.EnglishBidder;
 import sim.auction.Item;
@@ -40,46 +42,39 @@ public class Courier implements DutchBidder, EnglishBidder, Steppable {
         myNetwork.put(k, weight);
     }
 
-    public void randInit(List<Courier> courierList, List<Node> nodeChoice, CourierWorld state, Node hubNode) {
-        // Set up the couriers for the local clique
-        for (Courier curCour : courierList) {
-
-            // generate a random fully connected graph within the local nodes
-            for (Node n : nodeChoice) {
-                for (Node m : nodeChoice) {
-                    if (!n.equals(m)) {
-                        double randWeight = state.minWeight + state.random.nextDouble() * (state.maxWeight - state.minWeight);
-                        curCour.insertKeyValPair(new NodeKey(n, m), randWeight);
-                    }
-                }
-            }
-
-
-            if (!isGlobal) {
-                // must also connect to the global hub!
-                for (Node n : nodeChoice) {
+    public void randInit(List<Node> nodeChoice, CourierWorld state, Node hubNode) {
+        // Set up the couriers
+        // generate a random fully connected graph
+        for (Node n : nodeChoice) {
+            for (Node m : nodeChoice) {
+                if (!n.equals(m)) {
                     double randWeight = state.minWeight + state.random.nextDouble() * (state.maxWeight - state.minWeight);
-                    curCour.insertKeyValPair(new NodeKey(n, hubNode), randWeight);
-                }
-
-                // loop over the nodes that the courier occupies
-                for (Node n : curCour.getSourceNodes()) {
-                    Node nextNode = n, prevNode = n;
-                    while (nextNode != hubNode) {
-                        nextNode = nodeChoice.get(state.random.nextInt(nodeChoice.size()));
-                        double randWeight = state.minViableWeight + state.random.nextDouble() * (state.maxWeight - state.minViableWeight);
-                        curCour.getMap().put(new NodeKey(prevNode, nextNode), randWeight);
-                    }
+                    insertKeyValPair(new NodeKey(n, m), randWeight);
                 }
             }
-            else
-            {
-                
+        }
+
+
+        if (!isGlobal) {
+            // must also connect to the global hub
+            for (Node n : nodeChoice) {
+                double randWeight = state.minWeight + state.random.nextDouble() * (state.maxWeight - state.minWeight);
+                insertKeyValPair(new NodeKey(n, hubNode), randWeight);
             }
 
+            // loop over the nodes that the courier occupies
+            for (Node n : getSourceNodes()) {
+                Node nextNode = n, prevNode = n;
+                while (nextNode != hubNode) {
+                    nextNode = nodeChoice.get(state.random.nextInt(nodeChoice.size()));
+                    double randWeight = state.minViableWeight + state.random.nextDouble() * (state.maxWeight - state.minViableWeight);
+                    getMap().put(new NodeKey(prevNode, nextNode), randWeight);
+                }
+            }
+        } else {
+            double randWeight = state.minViableWeight + state.random.nextDouble() * (state.maxWeight - state.minViableWeight);
 
-
-
+            insertKeyValPair(new NodeKey(nodeChoice.get(state.random.nextInt(nodeChoice.size())), nodeChoice.get(state.random.nextInt(nodeChoice.size()))), randWeight);
         }
     }
 

@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Properties;
 import sim.courier.Courier;
 import sim.engine.SimState;
+import sim.engine.Steppable;
 import sim.field.grid.Grid2D;
 import sim.field.grid.SparseGrid2D;
 import sim.field.network.Network;
@@ -22,14 +23,34 @@ import sim.util.Bag;
  *
  * @author drew
  */
-public class CourierWorld extends SimState {
+public class CourierWorld extends SimState implements Steppable
+{
 
     public int gridSize = 500;
     public SparseGrid2D grid = new SparseGrid2D(gridSize, gridSize);
     public int minNumCouriersPerNode = 2;
     public List<Courier> globalCourierList;
 
-    public enum WorldProperties {
+    @Override
+    public void step(SimState state)
+    {
+        for(int i = 0; i < grid.allObjects.numObjs; i++)
+        {
+            Node node = (Node) grid.allObjects.objs[i];
+            
+            if (!node.isHub())
+            {
+                // generate a package
+                
+                node
+            }
+            
+            
+        }
+    }
+
+    public enum WorldProperties
+    {
 
         numberNodes,
         numSmallCouriers,
@@ -48,27 +69,30 @@ public class CourierWorld extends SimState {
     public int numMinGlobCourierPerHub = 2;
     public int numMaxPkgs = 100;
     public int localCliqueSize = 50; //radius of the cliques
-    public int hubNhbrSize = 20; 
+    public int hubNhbrSize = 20;
     public int maxNumCouriersPerHub = 10;//maxNumCouriersPerHub < minNumCouriersPerNode*numLocalNode
     public int maxNumCouriersPerNode = 5;
     public double maxWeight = 1;
     public double minWeight = 0;
     public double minViableWeight = 0.2;
-    public List<Node> hubs;
+    public List<Node> hubNodes;
     //public PackageGenerator pGen;
     //public double decayRate;
 
-    public CourierWorld(long seed) {
+    public CourierWorld(long seed)
+    {
         super(seed);
     }
 
-    public void start() {
+    public void start()
+    {
         super.start();
 
 
         // Need to load params from file
         Properties prop = new Properties();
-        try {
+        try
+        {
             // the configuration file name
             String fileName = "world.config";
             InputStream is = new FileInputStream(fileName);
@@ -76,8 +100,10 @@ public class CourierWorld extends SimState {
             // load the properties file
             prop.load(is);
 
-            for (String propName : prop.stringPropertyNames()) {
-                switch (WorldProperties.valueOf(propName)) {
+            for (String propName : prop.stringPropertyNames())
+            {
+                switch (WorldProperties.valueOf(propName))
+                {
                     case numberNodes:
                         numberNodes = Integer.parseInt(prop.getProperty(propName));
                         break;
@@ -102,48 +128,44 @@ public class CourierWorld extends SimState {
             }
 
 
-        } catch (FileNotFoundException e) {
-        } catch (IOException e) {
+        } catch (FileNotFoundException e)
+        {
+        } catch (IOException e)
+        {
         }
 
 
         // clear the world!
 
         grid.clear();
-        
+
         int userIndex = 0;
-        //srtup global courier
-        for(int i = 0; i < numGlobalCouriers; i++)
+        //setup global courier
+        for (int i = 0; i < numGlobalCouriers; i++)
         {
             Courier gc = new Courier(true);
             globalCourierList.add(gc);
         }
-        hubs = new ArrayList<>();
+        hubNodes = new ArrayList<>();
         //initialize the hubs and local couriers inside it
         for (int i = 0; i < numHubs; i++)
-        {            
-            Hub h = new Hub(this, userIndex);
-            hubs.add(h.myNode);
+        {
+            Hub h = new Hub(this);
+            h.setup(userIndex);
+            hubNodes.add(h.myNode);
         }
         //setup the cost network for the global courier
-        
-        
- 
+        for (Courier c : globalCourierList)
+        {
+            c.randInit(hubNodes, this, null);
+        }
 
-
-
-        // build the two brokers
-
-        // build the couriers
-
-
-        // schedule the package generator
-        schedule.scheduleOnce(new PackageGenerator(numHubs, numGlobalCouriers, numSmallCouriers), 0);
-        // schedule the couriers
+        schedule.scheduleRepeating(this);
 
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args)
+    {
         doLoop(CourierWorld.class, args);
         System.exit(0);
     }

@@ -21,15 +21,22 @@ import sim.util.Bag;
  *
  * @author indranil
  */
-public class Hub {
+public class Hub
+{
 
-    public List<Courier> globalCouriers;// the global couriers that occupy this hub
+    public CourierWorld state;
     public List<Courier> localCouriers;// the couriers in the local substrate of this hub
     public List<Broker> brokers; // the local brokers for this hub
     public List<Node> localNodes; // local nodes that branch out from this hub
     public Node myNode;
 
-    Hub(CourierWorld state, int useIndex) {
+    Hub(CourierWorld state)
+    {
+        this.state = state;
+    }
+
+    public void setup(int useIndex)
+    {
         boolean isAdded = false;
         int randx = 0, randy = 0;
 
@@ -38,14 +45,16 @@ public class Hub {
         brokers.add(new MaxProfitBroker());
 
         localCouriers = new ArrayList<>();
-        for (int i = 0; i < state.maxNumCouriersPerHub; i++) {
+        for (int i = 0; i < state.maxNumCouriersPerHub; i++)
+        {
             localCouriers.add(new Courier(false));
         }
 
 
         // first we generate an (x,y) coordinate for the hub
         // ensuring that it is the correct distance away from other hubs
-        while (!isAdded) {
+        while (!isAdded)
+        {
             isAdded = true;
             randx = state.random.nextInt(state.grid.getWidth());
             randy = state.random.nextInt(state.grid.getHeight());
@@ -53,9 +62,12 @@ public class Hub {
             Bag neighbr = new Bag();
             neighbr = state.grid.getMooreNeighbors(randx, randy, state.distFromHubs, Grid2D.BOUNDED, neighbr, null, null);
 
-            if (!neighbr.isEmpty()) {
-                for (int i = 0; i < neighbr.numObjs; i++) {
-                    if (((Node) neighbr.get(i)).isHub()) {
+            if (!neighbr.isEmpty())
+            {
+                for (int i = 0; i < neighbr.numObjs; i++)
+                {
+                    if (((Node) neighbr.get(i)).isHub())
+                    {
                         isAdded = false;
                         break;
                     }
@@ -77,127 +89,86 @@ public class Hub {
         int cours[] = new int[state.maxNumCouriersPerHub];
 
         // indices into localCouriers
-        for (int i = 0; i < cours.length; i++) {
+        for (int i = 0; i < cours.length; i++)
+        {
             cours[i] = i;
         }
 
         int courierCount = 0;
         localNodes = new ArrayList<>();
-        for (int i = 0; i < state.numLocalNode; i++) {
-            if (state.random.nextDouble() < probGenNode) {
+        for (int i = 0; i < state.numLocalNode; i++)
+        {
+            if (state.random.nextDouble() < probGenNode)
+            {
                 User user = new User(state.numMaxPkgs, useIndex, hubNode);
                 Node userNode = new Node(user);
 
                 int nodex = -1, nodey = -1;
 
-                while (!(nodex >= 0 && nodex < state.grid.getWidth() && nodey >= 0 && nodey < state.grid.getHeight())) {
+                while (!(nodex >= 0 && nodex < state.grid.getWidth() && nodey >= 0 && nodey < state.grid.getHeight()))
+                {
                     nodex = randx + (int) ((1.0 - 2.0 * state.random.nextDouble()) * state.localCliqueSize);
                     nodey = randy + (int) ((1.0 - 2.0 * state.random.nextDouble()) * state.localCliqueSize);
 
-                    if (!(state.grid.getObjectsAtLocation(nodex, nodey).isEmpty())) {
+                    if (!(state.grid.getObjectsAtLocation(nodex, nodey).isEmpty()))
+                    {
                         nodex = -1;//to look for another location
                     }
                 }
                 // added local node to grid
                 state.grid.setObjectLocation(userNode, nodex, nodey);
 
-                if (courierCount > state.maxNumCouriersPerHub) {
+                if (courierCount > state.maxNumCouriersPerHub)
+                {
                     // add random number of couriers to the userNode
                     int numCouriers = state.random.nextInt(state.maxNumCouriersPerNode - state.minNumCouriersPerNode) + state.minNumCouriersPerNode;
                     // shuffle the couriers indices
-                    for (int j = 0; j < state.maxNumCouriersPerHub; j++) {
+                    for (int j = 0; j < state.maxNumCouriersPerHub; j++)
+                    {
                         int shuffle = state.random.nextInt(state.maxNumCouriersPerHub - j) + j;
                         cours[j] = cours[shuffle];
                     }
 
-                    for (int j = 0; j < numCouriers; j++) {
+                    for (int j = 0; j < numCouriers; j++)
+                    {
                         userNode.addCourier(localCouriers.get(cours[j]));
                         localCouriers.get(cours[j]).addSource(userNode);
                     }
 
-                } else {
+                } else
+                {
                     // add the couriers to the node
                     int numCouriers = state.random.nextInt(state.maxNumCouriersPerNode - state.minNumCouriersPerNode) + state.minNumCouriersPerNode;
                     int j;
-                    for ( j = 0; j < numCouriers; j++) {
+                    for (j = 0; j < numCouriers; j++)
+                    {
                         userNode.addCourier(localCouriers.get(cours[j]));
                         localCouriers.get(courierCount++).addSource(userNode);
-                        if (courierCount >= state.maxNumCouriersPerHub) {
+                        if (courierCount >= state.maxNumCouriersPerHub)
+                        {
                             break;
                         }
                     }
-                   
-                   numCouriers -= j;
-                    
-                    
-                    for (int k = 0; k < numCouriers; k++) {
+
+                    numCouriers -= j;
+
+
+                    for (int k = 0; k < numCouriers; k++)
+                    {
                         userNode.addCourier(localCouriers.get(k));
                         localCouriers.get(k).addSource(userNode);
                     }
-                    
-                    
                 }
-
-
-
 
                 localNodes.add(userNode);
                 useIndex++;
             }
-
-
         }
-
-
-
 
         // Set up the couriers for the local clique
-        for (Courier curCour : localCouriers) {
-
-            // generate a random fully connected graph within the local nodes
-            for (Node n : localNodes) {
-                for (Node m : localNodes) {
-                    if (!n.equals(m)) {
-                        double randWeight = state.minWeight + state.random.nextDouble() * (state.maxWeight - state.minWeight);
-                        curCour.insertKeyValPair(new NodeKey(n, m), randWeight);
-                    }
-                }
-            }
-
-
-
-            // must also connect to the global hub!
-            for (Node n : localNodes) {
-                double randWeight = state.minWeight + state.random.nextDouble() * (state.maxWeight - state.minWeight);
-                curCour.insertKeyValPair(new NodeKey(n, hubNode), randWeight);
-            }
-
-            // loop over the nodes that the courier occupies
-            for (Node n : curCour.getSourceNodes()) {
-                Node nextNode = n, prevNode = n;
-                while (nextNode != hubNode) {
-                    nextNode = localNodes.get(state.random.nextInt(localNodes.size()));
-                    double randWeight = state.minViableWeight + state.random.nextDouble() * (state.maxWeight - state.minViableWeight);
-                    curCour.getMap().put(new NodeKey(prevNode, nextNode), randWeight);
-                }
-            }
-
-
-
+        for (Courier curCour : localCouriers)
+        {
+            curCour.randInit(localNodes, state, hubNode);
         }
-
-        //loop for adding global courier to the Hub
-        globalCouriers = new ArrayList<>();
-        int numGlobCourier = state.numMinGlobCourierPerHub + state.random.nextInt(state.maxNumCouriersPerHub - state.minNumCouriersPerNode);
-        int gcours[] = new int[state.numGlobalCouriers];
-        for (int j = 0; j < state.numGlobalCouriers; j++) {
-            int shuffle = state.random.nextInt(state.numGlobalCouriers - j) + j;
-            gcours[j] = gcours[shuffle];
-        }
-        for (int i = 0; i < numGlobCourier; i++) {
-            this.globalCouriers.add(state.globalCourierList.get(gcours[i]));
-            state.globalCourierList.get(gcours[i]).addSource(hubNode);
-        }
-
     }
 }
