@@ -47,6 +47,7 @@ public class CourierWorld extends SimState implements Steppable
             }
         }
 
+        // courier to broker
         for (Node hubnode : hubNodes)
         {
             for (Courier cour : hubnode.getHub().localCouriers)
@@ -54,6 +55,24 @@ public class CourierWorld extends SimState implements Steppable
                 cour.sendPackageToBroker(hubnode.getHub().brokers);
             }
         }
+        
+        // broker to couriers through auction in each hub
+        for (Node hubnode : hubNodes)
+        {
+            // perform an auction with each broker
+            for (Broker broker : hubnode.getHub().brokers)
+            {
+                List<Courier> allCours = new ArrayList<>();
+                allCours.addAll(globalCourierList);
+                allCours.addAll(hubnode.getHub().localCouriers);
+                
+                broker.performAuctions(allCours);
+                broker.decayPackages();
+            }
+        }
+        
+        
+        
 
         for (Node hubnode : hubNodes)
         {

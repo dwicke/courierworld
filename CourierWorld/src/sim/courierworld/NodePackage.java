@@ -5,6 +5,7 @@
 package sim.courierworld;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map.Entry;
 
 /**
@@ -40,6 +41,12 @@ public class NodePackage {
         }
     }
 
+    public void decay() {
+        for (int i = 0; i < priorityGroups.length; i++) {
+            priorityGroups[i].decay();
+        }
+    }
+
     public class PriorityGroups {
 
         HashMap<Node, Packages> packages = new HashMap<>();
@@ -53,6 +60,14 @@ public class NodePackage {
             for (Entry<Node, Packages> en : packs.entrySet())
             {
                 addPackage(en.getValue());
+            }
+        }
+        
+        public void decay()
+        {
+            for(Entry<Node, Packages> next : packages.entrySet())
+            {
+                next.getValue().decay();// decrease the number of packages.
             }
         }
         

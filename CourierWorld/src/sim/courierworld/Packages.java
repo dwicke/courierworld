@@ -34,6 +34,10 @@ public class Packages
         return this;
     }
 
+    void decay() {
+        numberPacks *= priority.decayRate;
+    }
+
     public enum Priority
     {
 

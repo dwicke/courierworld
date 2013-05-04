@@ -4,7 +4,9 @@
  */
 package sim.broker;
 
+import java.util.List;
 import sim.auction.Appraiser;
+import sim.courier.Courier;
 import sim.courierworld.NodePackage;
 
 /**
@@ -38,6 +40,13 @@ public abstract class Broker implements Appraiser<NodePackage>{
     {
         this.myPackages.addAll(myPackages);
         profit += fee;
+    }
+
+    public abstract void performAuctions(List<Courier> courierList);
+
+    public void decayPackages() {
+        myPackages.decay();
+        
     }
     
 }
