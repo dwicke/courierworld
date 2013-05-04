@@ -40,13 +40,11 @@ public class CourierWorld extends SimState implements Steppable
             
             if (!node.isHub())
             {
-                // generate a package
-                
-                node
-            }
-            
-            
-        }
+                // generate a package                
+                node.userToCourier(this);
+            }            
+        }      
+        
     }
 
     public enum WorldProperties
@@ -59,7 +57,7 @@ public class CourierWorld extends SimState implements Steppable
         distFromHubs,
         numLocalNode;
     };
-    public int numberNodes = 1000;      // number of communities other than hubs
+    public double maxPolicyVal = 0.5;    public int numberNodes = 1000;      // number of communities other than hubs
     public int numSmallCouriers = 200; // number of couriers that can transport packages cost effectively between nonhubs
     public int numGlobalCouriers = 10; // number of couriers that can transport packages cost effectively between hubs and 
     public int numHubs = 10;            // number of hubs in the network

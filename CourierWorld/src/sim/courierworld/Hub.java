@@ -100,7 +100,7 @@ public class Hub
         {
             if (state.random.nextDouble() < probGenNode)
             {
-                User user = new User(state.numMaxPkgs, useIndex, hubNode);
+                User user = new User(state.numMaxPkgs, useIndex, hubNode, state.maxPolicyVal*state.random.nextDouble());
                 Node userNode = new Node(user);
 
                 int nodex = -1, nodey = -1;

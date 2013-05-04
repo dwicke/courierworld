@@ -16,7 +16,7 @@ import sim.user.User;
  * of packages to this node.
  * @author drew
  */
-public class Node implements Steppable{
+public class Node{
     
     private User user;
     private Hub hub;
@@ -46,16 +46,14 @@ public class Node implements Steppable{
         return couriers.size();
     }
 
-    @Override
-    public void step(SimState state) {
-        user.generatePackages();
-        Courier chosen = user.chooseCourier(couriers);
-        
-        
+
+    public boolean isHub() {
+        return isHub; //To change body of generated methods, choose Tools | Templates.
     }
 
-    boolean isHub() {
-        return isHub; //To change body of generated methods, choose Tools | Templates.
+    void userToCourier(CourierWorld world)
+    {
+        user.givePackage(couriers, world);
     }
 
     

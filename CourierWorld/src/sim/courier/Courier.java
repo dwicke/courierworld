@@ -16,6 +16,8 @@ import sim.auction.Item;
 import sim.courierworld.CourierWorld;
 import sim.courierworld.Node;
 import sim.courierworld.NodeKey;
+import sim.courierworld.NodePackage;
+import sim.courierworld.Packages;
 import sim.engine.SimState;
 import sim.engine.Steppable;
 import sim.field.network.Edge;
@@ -26,15 +28,18 @@ import sim.field.network.Edge;
  */
 public class Courier implements DutchBidder, EnglishBidder, Steppable {
 
-    private int profit;
+    private double profit;
+    public NodePackage myPackages;
     private boolean isGlobal;
     // map the edges to costs
     private HashMap<NodeKey, Double> myNetwork;
     private List<Node> sourceNode;
+    
 
     public Courier(boolean isGlobal) {
         myNetwork = new HashMap<>();
         sourceNode = new ArrayList<>();
+        myPackages = new NodePackage();
         this.isGlobal = isGlobal;
     }
 
@@ -114,4 +119,21 @@ public class Courier implements DutchBidder, EnglishBidder, Steppable {
     public List<Node> getSourceNodes() {
         return sourceNode;
     }
+
+    public double getSuccessRate()
+    {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public void recievePackage(Packages packages, double fee)
+    {
+        myPackages.add(packages);
+        profit += fee; //TODO
+    }
+
+    public double getQuote(Packages nodePackage)
+    {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
 }
