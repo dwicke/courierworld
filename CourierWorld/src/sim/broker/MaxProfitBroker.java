@@ -26,6 +26,7 @@ public class MaxProfitBroker extends Broker {
 
     @Override
     public double getQuote(NodePackage myPackages) {
+        return 0;
         
     }
 

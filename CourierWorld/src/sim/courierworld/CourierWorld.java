@@ -11,6 +11,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import sim.broker.Broker;
 import sim.courier.Courier;
 import sim.engine.SimState;
 import sim.engine.Steppable;
@@ -48,9 +49,17 @@ public class CourierWorld extends SimState implements Steppable
 
         for (Node hubnode : hubNodes)
         {
-            for(Courier cour : hubnode.getHub().localCouriers)
+            for (Courier cour : hubnode.getHub().localCouriers)
             {
                 cour.sendPackageToBroker(hubnode.getHub().brokers);
+            }
+        }
+
+        for (Node hubnode : hubNodes)
+        {
+            for (Broker b : hubnode.getHub().brokers)
+            {
+                b.performAuction();
             }
         }
 
