@@ -180,9 +180,8 @@ public class Courier {
         }
     }
 
-    public void movePacksGlobally() {
-        //To change body of generated methods, choose Tools | Templates.
-        throw new UnsupportedOperationException("Not supported yet.");
+    public void movePacksGlobally(Node globalNode, CourierWorld world) {
+        
     }
 
     /**

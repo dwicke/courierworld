@@ -99,7 +99,7 @@ public class CourierWorld extends SimState implements Steppable
                 // correct hub where the local destination stems
                 // from or to a different hub where it the stacks
                 // will be auctioned off next timestep
-                gCour.movePacksGlobally();
+                gCour.movePacksGlobally(hubNode, this);
             }
         }
         
