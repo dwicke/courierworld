@@ -33,6 +33,8 @@ public class Courier {
     private double policy;
     private Broker userBroker; // the broker i used to give user a quote and used to give success rate.
 
+    
+    
     public Courier(boolean isGlobal) {
         myNetwork = new HashMap<>();
         sourceNode = new ArrayList<>();
@@ -131,7 +133,7 @@ public class Courier {
         h.updateStack(stack.getKey(), stack.getValue());
         // loop over the brokers and get a quote.
 
-        
+
         double bestQuote = -1;
 
         // for each of the brokers get a quote
@@ -181,6 +183,24 @@ public class Courier {
     }
 
     public void movePacksGlobally(Node globalNode, CourierWorld world) {
+        // moves packages to most profitable broker
+        // global couriers are globally connected so
+        // they have the option of transporting to the
+        // correct hub where the local destination stems
+        // from or to a different hub where it the stacks
+        // will be auctioned off next timestep
+       
+        
+        // probability of delivering to global node that has the local node
+        // stemming from it given priority
+        // loop over the packages
+        Iterator<Entry<Warehouse.Key, Integer>> iter = myPackages.getIterator();
+        
+
+        while (iter.hasNext()) {
+            
+        }
+        
         
     }
 
@@ -188,43 +208,44 @@ public class Courier {
      * Delivers the packages and tries to get customers along the way.
      */
     public void deliverStacks(Node globalNode, CourierWorld world) {
-        
+
         // loop over the packages
-        Iterator<Entry<Warehouse.Key, Integer> > iter = myPackages.getIterator();
+        Iterator<Entry<Warehouse.Key, Integer>> iter = myPackages.getIterator();
         int maxRandTravel = world.maxRandTravel;
-        
-        while(iter.hasNext())
-        {
+
+        while (iter.hasNext()) {
             Entry<Warehouse.Key, Integer> stacks = iter.next();
             Node curNode = globalNode;// where I am right now
             int randTrav = world.random.nextInt(maxRandTravel + 1);
-           
-            for (int i = 0; i < randTrav; i++)
-            {
+
+            // travel to randTrav number of nodes.
+            for (int i = 0; i < randTrav; i++) {
                 double best = world.maxWeight;
                 Node next = null;
-                for(Node localNode : globalNode.getHub().localNodes)
-                {
-                    if(curNode != localNode)
-                    {
-                        if(myNetwork.get(new NodeKey(curNode, localNode)) < best)
-                        {
+                // find the best next node.
+                for (Node localNode : globalNode.getHub().localNodes) {
+                    if (curNode != localNode) {
+                        if (myNetwork.get(new NodeKey(curNode, localNode)) < best) {
                             best = myNetwork.get(new NodeKey(curNode, localNode));
                             next = localNode;
                         }
                     }
                 }
-                
-                if (next != null)
-                {
+
+                if (next != null) {
+                    // not sure if i should do the division...
                     profit -= (best * (stacks.getValue() / randTrav));
                     next.getUser().randGivePackage(this, world);
                     curNode = next;
                 }
-                
+
             }
+            
+            // deliver to the destination node
+            profit -= (myNetwork.get(new NodeKey(curNode, stacks.getKey().dest)) * (stacks.getValue()));
+            
         }
-        
-        
+
+
     }
 }
