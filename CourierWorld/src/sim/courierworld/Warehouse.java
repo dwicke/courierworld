@@ -5,6 +5,7 @@
 package sim.courierworld;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map.Entry;
 
 /**
@@ -37,8 +38,8 @@ public class Warehouse {
         public Key(Node dest, Priority priority) {
             this.dest = dest;
             this.priority = priority;
-        } 
-
+        }
+        
         @Override
         public boolean equals(Object obj) {
             
@@ -102,12 +103,16 @@ public class Warehouse {
     
     /**
      * Gets the number of packages that correspond to the key
+     * if key is not in this return -1.
      * @param key
      * @return 
      */
     public int getNumPacks(Key key)
     {
-        return mapping.get(key);
+        if (mapping.containsKey(key))
+            return mapping.get(key);
+        else
+            return -1;
     }
     
     public void clear()
@@ -127,5 +132,10 @@ public class Warehouse {
         {
             updateStack(en.getKey(), en.getValue());
         }
+    }
+    
+    public Iterator<Entry<Key, Integer> > getIterator()
+    {
+        return mapping.entrySet().iterator();
     }
 }

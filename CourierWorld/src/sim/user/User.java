@@ -62,7 +62,8 @@ public class User {
             double bestQuote = -1;
 
             for (Courier cour : couriers) {
-                double quote = cour.getQuote(allPackages.getPackage());
+                // must get quote first in order for the courier to say what its success rate is
+                double quote = cour.getQuote(allPackages.getPackage(), hub);
                 double succRate = cour.getSuccessRate();
 
                 if (bestQuote == -1) {

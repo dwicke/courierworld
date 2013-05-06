@@ -47,7 +47,7 @@ public class CourierWorld extends SimState implements Steppable
             }
         }
 
-        // courier to broker
+        // local courier to broker
         for (Node hubnode : hubNodes)
         {
             for (Courier cour : hubnode.getHub().localCouriers)
@@ -55,6 +55,8 @@ public class CourierWorld extends SimState implements Steppable
                 cour.sendPackageToBroker(hubnode.getHub().brokers);
             }
         }
+        
+        
         
         // broker to couriers through auction in each hub
         for (Node hubnode : hubNodes)
@@ -70,18 +72,37 @@ public class CourierWorld extends SimState implements Steppable
                 broker.decayPackages();
             }
         }
-        
-        
-        
 
+        // local courier to user
         for (Node hubnode : hubNodes)
         {
-            for (Broker b : hubnode.getHub().brokers)
+            for (Courier cour : hubnode.getHub().localCouriers)
             {
-                b.performAuction();
+                // so the local couriers deliver the stacks to the
+                // destination nodes.  Since the local couriers
+                // are fully connected to all other nodes in the
+                // local substructure they can pass through
+                // x number of local nodes and ask for user for
+                // stacks before delivering the stacks to the dest.
+                cour.deliverStacks();
             }
         }
 
+        // global courier to broker
+        for (Node hubNode : hubNodes)
+        {
+            for (Courier gCour : globalCourierList)
+            {
+                // moves packages to most profitable broker
+                // global couriers are globally connected so
+                // they have the option of transporting to the
+                // correct hub where the local destination stems
+                // from or to a different hub where it the stacks
+                // will be auctioned off next timestep
+                gCour.movePacksGlobally();
+            }
+        }
+        
     }
 
     public enum WorldProperties
