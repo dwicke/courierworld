@@ -181,6 +181,50 @@ public class Courier {
             }
         }
     }
+    
+    public Node getBestGlobalNode(Node sourceHub, Entry<Warehouse.Key, Integer> destination, CourierWorld world)
+    {
+        // probability of delivering to global node that has the local node
+        // stemming from it given priority
+        // loop over the packages
+        Iterator<Entry<Warehouse.Key, Integer>> iter = myPackages.getIterator();
+        Node best = null;
+
+        while (iter.hasNext()) {
+            
+            // basically they are like a user and the brokers are the
+            // couriers
+            // so loop over all of the hubs except sourceHub
+            
+            for (Node globalNode : world.hubNodes)
+            {
+                for(Broker broker : globalNode.getHub().brokers)
+                {
+                    
+                }
+            }
+            
+        }
+        
+        return best;
+    }
+    
+    public Node getDestinationGlobalHub(Entry<Warehouse.Key, Integer> destination, CourierWorld world)
+    {
+        Node globalDest = null;
+       
+        for(Node glob : world.hubNodes)
+        {
+            if(glob.getHub().localNodes.contains(destination.getKey().dest))
+            {
+                return glob;
+            }
+        }
+        
+        // return null otherwise it is bad...
+        return globalDest;
+                
+    }
 
     public void movePacksGlobally(Node globalNode, CourierWorld world) {
         // moves packages to most profitable broker
@@ -190,20 +234,10 @@ public class Courier {
         // from or to a different hub where it the stacks
         // will be auctioned off next timestep
        
+        // for each package decide whether I should deliver to the correct
+        // global hub or to deliver to a different hub
         
-        // probability of delivering to global node that has the local node
-        // stemming from it given priority
-        // loop over the packages
-        Iterator<Entry<Warehouse.Key, Integer>> iter = myPackages.getIterator();
-        
-
-        while (iter.hasNext()) {
-            
-            
-            
-            
-            
-        }
+        // first find the destination global hub
         
         
     }
