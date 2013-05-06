@@ -4,6 +4,8 @@
  */
 package sim.user;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import sim.courier.Courier;
 import sim.courierworld.CourierWorld;
@@ -52,6 +54,20 @@ public class User {
             }
         }
 
+    }
+    
+    /**
+     * Returns whether the user gave a package.
+     * @param courier 
+     */
+    public boolean randGivePackage(Courier courier, CourierWorld world)
+    {
+        ArrayList<Courier> c = new ArrayList<>();
+        c.add(courier);
+        // should be based on a policy
+        givePackage(c, world);
+        
+        return true;
     }
 
     //user gets quotes from different courier and gives packages to the courier with best quote

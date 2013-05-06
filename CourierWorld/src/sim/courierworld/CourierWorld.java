@@ -84,7 +84,7 @@ public class CourierWorld extends SimState implements Steppable
                 // local substructure they can pass through
                 // x number of local nodes and ask for user for
                 // stacks before delivering the stacks to the dest.
-                cour.deliverStacks();
+                cour.deliverStacks(hubnode, this);
             }
         }
 
@@ -132,6 +132,7 @@ public class CourierWorld extends SimState implements Steppable
     public double maxWeight = 1;
     public double minWeight = 0;
     public double minViableWeight = 0.2;
+    public int maxRandTravel = 5;
     public List<Node> hubNodes;
     //public PackageGenerator pGen;
     //public double decayRate;

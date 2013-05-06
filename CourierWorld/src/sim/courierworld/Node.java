@@ -50,6 +50,10 @@ public class Node{
     {
         return hub;
     }
+    public User getUser()
+    {
+        return user;
+    }
 
     public boolean isHub() {
         return isHub; //To change body of generated methods, choose Tools | Templates.

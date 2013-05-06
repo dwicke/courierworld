@@ -4,8 +4,10 @@
  */
 package sim.courier;
 
+import ec.util.MersenneTwisterFast;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 import sim.auction.DutchBidder;
@@ -186,9 +188,43 @@ public class Courier {
     /**
      * Delivers the packages and tries to get customers along the way.
      */
-    public void deliverStacks() {
+    public void deliverStacks(Node globalNode, CourierWorld world) {
         
+        // loop over the packages
+        Iterator<Entry<Warehouse.Key, Integer> > iter = myPackages.getIterator();
+        int maxRandTravel = world.maxRandTravel;
         
+        while(iter.hasNext())
+        {
+            Entry<Warehouse.Key, Integer> stacks = iter.next();
+            Node curNode = globalNode;// where I am right now
+            int randTrav = world.random.nextInt(maxRandTravel + 1);
+           
+            for (int i = 0; i < randTrav; i++)
+            {
+                double best = world.maxWeight;
+                Node next = null;
+                for(Node localNode : globalNode.getHub().localNodes)
+                {
+                    if(curNode != localNode)
+                    {
+                        if(myNetwork.get(new NodeKey(curNode, localNode)) < best)
+                        {
+                            best = myNetwork.get(new NodeKey(curNode, localNode));
+                            next = localNode;
+                        }
+                    }
+                }
+                
+                if (next != null)
+                {
+                    profit -= (best * (stacks.getValue() / randTrav));
+                    next.getUser().randGivePackage(this, world);
+                    curNode = next;
+                }
+                
+            }
+        }
         
         
     }
