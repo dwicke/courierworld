@@ -14,7 +14,7 @@ import sim.courierworld.Node;
 import sim.courierworld.Warehouse;
 
 /**
- * Purpose of a user is to randomly generate NodePackage objects for its node.
+ * Purpose of a user is to randomly generate warehouse objects to be delivered.
  * So each node contains a User.
  *
  * @author drew
