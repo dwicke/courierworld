@@ -7,19 +7,19 @@ package sim.broker;
 import java.util.List;
 import sim.auction.Appraiser;
 import sim.courier.Courier;
-import sim.courierworld.NodePackage;
+import sim.courierworld.Warehouse;
 
 /**
  *
  * @author indranil
  */
-public abstract class Broker implements Appraiser<NodePackage>{
+public abstract class Broker implements Appraiser<Warehouse>{
 
     private double defaultRate = 0.0;
     private double profit = 0.0;
-    private NodePackage myPackages = new NodePackage();
+    private Warehouse myPackages = new Warehouse();
     
-    public abstract double getQuote(NodePackage myPackages);
+    public abstract double getQuote(Warehouse myPackages);
 
     /**
      * Returns the percentage of packages the broker
@@ -36,7 +36,7 @@ public abstract class Broker implements Appraiser<NodePackage>{
      * @param myPackages
      * @param fee
      */
-    public void addPackage(NodePackage myPackages, double fee)
+    public void addPackage(Warehouse myPackages, double fee)
     {
         this.myPackages.addAll(myPackages);
         profit += fee;
@@ -45,8 +45,13 @@ public abstract class Broker implements Appraiser<NodePackage>{
     public abstract void performAuctions(List<Courier> courierList);
 
     public void decayPackages() {
-        myPackages.decay();
+        myPackages.decayStacks();
         
+    }
+
+    public void performAuction() {
+        //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException("Not supported yet.");
     }
     
 }

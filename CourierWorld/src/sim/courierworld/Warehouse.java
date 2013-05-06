@@ -12,6 +12,10 @@ import java.util.Map.Entry;
  * @author drew
  */
 public class Warehouse {
+
+    
+
+    
     public enum Priority
     {
 
@@ -61,7 +65,13 @@ public class Warehouse {
         this.mapping = new HashMap<>();
     }
     
-    /**
+   
+    public void updateStack(Node dest, Priority priority, int numPacks)
+    {
+        updateStack(new Key(dest, priority), numPacks);
+    }
+    
+     /**
      * Inserts key value pairs into this if new
      * otherwise it will add to the k the numPacks.
      * @param k
@@ -80,7 +90,7 @@ public class Warehouse {
     }
     
     /**
-     * Decays all of the packages in the this.
+     * Decays all of the packages in this.
      */
     public void decayStacks()
     {
@@ -98,5 +108,24 @@ public class Warehouse {
     public int getNumPacks(Key key)
     {
         return mapping.get(key);
+    }
+    
+    public void clear()
+    {
+        mapping.clear();
+    }
+    public boolean hasStack() {
+        return !(mapping.isEmpty());
+    }
+    
+    public Entry<Key, Integer> getPackage()
+    {
+        return mapping.entrySet().iterator().next();
+    }
+    public void addAll(Warehouse myPackages) {
+        for (Entry<Key, Integer> en : myPackages.mapping.entrySet())
+        {
+            updateStack(en.getKey(), en.getValue());
+        }
     }
 }

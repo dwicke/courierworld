@@ -7,22 +7,14 @@ package sim.courier;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
-import javax.swing.text.html.parser.Entity;
 import sim.auction.DutchBidder;
 import sim.auction.EnglishBidder;
 import sim.auction.Item;
 import sim.broker.Broker;
-import sim.courierworld.CourierWorld;
-import sim.courierworld.Hub;
-import sim.courierworld.Node;
-import sim.courierworld.NodeKey;
-import sim.courierworld.NodePackage;
-import sim.courierworld.Packages;
+import sim.courierworld.*;
 import sim.engine.SimState;
 import sim.engine.Steppable;
-import sim.field.network.Edge;
 
 /**
  *
@@ -32,7 +24,7 @@ public class Courier implements DutchBidder, EnglishBidder, Steppable
 {
 
     private double profit;
-    public NodePackage myPackages;
+    public Warehouse myPackages;
     private boolean isGlobal;
     // map the edges to costs
     private HashMap<NodeKey, Double> myNetwork;
@@ -43,7 +35,7 @@ public class Courier implements DutchBidder, EnglishBidder, Steppable
     {
         myNetwork = new HashMap<>();
         sourceNode = new ArrayList<>();
-        myPackages = new NodePackage();
+        myPackages = new Warehouse();
         this.isGlobal = isGlobal;
     }
 
@@ -146,20 +138,20 @@ public class Courier implements DutchBidder, EnglishBidder, Steppable
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public void recievePackage(Packages packages, double fee)
+    public void recievePackage(Entry<Warehouse.Key, Integer> stack, double fee)
     {
-        myPackages.add(packages);
+        myPackages.updateStack(stack.getKey().dest, stack.getKey().priority, stack.getValue());
         profit += fee; //TODO
     }
 
-    public double getQuote(Packages nodePackage)
+    public double getQuote(Entry<Warehouse.Key, Integer> stack)
     {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     public void sendPackageToBroker(List<Broker> brokers)
     {
-        if (!myPackages.isEmpty())
+        if (myPackages.hasStack())
         {
             Broker bestBroker = null;
             double bestQuote = -1;
@@ -181,12 +173,12 @@ public class Courier implements DutchBidder, EnglishBidder, Steppable
                 }
             }
 
-            // give teh broker his fee and the packages
+            // give the broker his fee and the packages
             if (bestBroker != null)
             {
                 bestBroker.addPackage(myPackages, bestQuote / (1.0 - policy + policy * (1 - bestBroker.getDefaultRate())));
                 // i have to reset myPackages I have given them to the broker
-                myPackages = new NodePackage();
+                myPackages.clear();
             }
         }
     }
