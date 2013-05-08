@@ -4,20 +4,14 @@
  */
 package sim.courier;
 
-import ec.util.MersenneTwisterFast;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import sim.auction.DutchBidder;
-import sim.auction.EnglishBidder;
-import sim.auction.Item;
 import sim.broker.Broker;
 import sim.courierworld.*;
-import sim.engine.SimState;
-import sim.engine.Steppable;
 
 /**
  *

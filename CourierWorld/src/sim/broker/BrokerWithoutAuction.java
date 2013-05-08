@@ -9,9 +9,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import sim.auction.Item;
 import sim.courier.Courier;
-import sim.courierworld.NodePackage;
+import sim.courierworld.CourierWorld;
 import sim.courierworld.Warehouse;
 
 /**
@@ -22,22 +21,23 @@ import sim.courierworld.Warehouse;
  * @author drew
  */
 public class BrokerWithoutAuction extends Broker {
-
+    public double baseRate = 1.0;//selling without profit
+    public double  minBaseRate = 0.5;
+    public double  maxBaseRate = 10.0;
+    public double  profitFactor = 1.5;
+    
     @Override
-    public double getEstValue(Item i) {
-        //To change body of generated methods, choose Tools | Templates.
-        // need to factor in the average life of the packs
-        throw new UnsupportedOperationException("Not supported yet.");
+    public double getQuote(Warehouse myPackages)
+    {
+        return bidRate*profitFactor;
     }
 
-    @Override
-    public double getQuote(NodePackage myPackages) {
-        return 0;
-
-    }
+    
 
     @Override
-    public void performAuctions(List<Courier> courierList) {
+    public void performAuctions(List<Courier> courierList, CourierWorld world) {
+        //get bid rate for current step
+        bidRate = upDateBidRate();
         //do this for each package <dest, priority>
         Iterator<Map.Entry<Warehouse.Key, Integer>> iter = getMyPackages().getIterator();
         HashMap<Courier, Warehouse> bids = new HashMap<>();
@@ -67,8 +67,17 @@ public class BrokerWithoutAuction extends Broker {
         for (Courier c : courierList)
         {
             c.myPackages.addAll(bids.get(c));
+            succPakcages.addAll(bids.get(c));
+            
+            profit -= (int)(bidRate * bids.get(c).getTotalNumPacks());
             
         }
 
     }
+
+    private double upDateBidRate()
+    {
+       return  Math.random()*(maxBaseRate - minBaseRate) + minBaseRate;
+    }
+
 }

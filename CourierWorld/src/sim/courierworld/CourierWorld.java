@@ -68,7 +68,7 @@ public class CourierWorld extends SimState implements Steppable
                 allCours.addAll(globalCourierList);
                 allCours.addAll(hubnode.getHub().localCouriers);
                 
-                broker.performAuctions(allCours);
+                broker.performAuctions(allCours, this);
                 broker.decayPackages();
             }
         }
@@ -145,8 +145,7 @@ public class CourierWorld extends SimState implements Steppable
     public void start()
     {
         super.start();
-
-
+        globalCourierList = new  ArrayList<>();
         // Need to load params from file
         Properties prop = new Properties();
         try

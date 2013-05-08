@@ -8,22 +8,22 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import sim.auction.Appraiser;
 import sim.courier.Courier;
+import sim.courierworld.CourierWorld;
 import sim.courierworld.Warehouse;
 
 /**
  *
  * @author indranil
  */
-public abstract class Broker implements Appraiser<Warehouse>{
+public abstract class Broker{
 
-    private double defaultRate = 0.0;
-    private double profit = 0.0;
+    public double defaultRate = 0.0;
+    public double profit = 0.0;
     double bidRate = 0.1;
-    private Warehouse myPackages = new Warehouse();
-    private Warehouse lostPackages = new Warehouse();
-    private Warehouse succPakcages = new Warehouse();
+    public Warehouse myPackages = new Warehouse();
+    public Warehouse lostPackages = new Warehouse();
+    public Warehouse succPakcages = new Warehouse();
     
     
     // the quote for all of the packages in the warehouse
@@ -77,10 +77,11 @@ public abstract class Broker implements Appraiser<Warehouse>{
         profit += fee;
     }
 
-    public abstract void performAuctions(List<Courier> courierList);
+    public abstract void performAuctions(List<Courier> courierList,  CourierWorld world);
 
     public void decayPackages() {
-        myPackages.decayStacks();
+        myPackages.decayStacks(lostPackages);
+        
         
     }
     

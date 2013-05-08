@@ -110,7 +110,7 @@ public class Hub
                     nodex = randx + (int) ((1.0 - 2.0 * state.random.nextDouble()) * state.localCliqueSize);
                     nodey = randy + (int) ((1.0 - 2.0 * state.random.nextDouble()) * state.localCliqueSize);
 
-                    if (!(state.grid.getObjectsAtLocation(nodex, nodey).isEmpty()))
+                    if (!(state.grid.getObjectsAtLocation(nodex, nodey) == null))
                     {
                         nodex = -1;//to look for another location
                     }

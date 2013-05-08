@@ -14,8 +14,15 @@ import java.util.Map.Entry;
  */
 public class Warehouse {
 
-    
-
+    public int getTotalNumPacks()
+    {
+        int counter = 0;
+        for (Entry<Key, Integer> en : mapping.entrySet())
+        {
+            counter += en.getValue();
+        }
+        return counter;
+    }
     
     public enum Priority
     {
@@ -93,11 +100,13 @@ public class Warehouse {
     /**
      * Decays all of the packages in this.
      */
-    public void decayStacks()
+    public void decayStacks(Warehouse lostPackages)
     {
         for(Entry<Key, Integer> ent : mapping.entrySet())
         {
+            int decayed = ent.getValue() - (int)(ent.getValue() * ent.getKey().priority.decayRate);
             ent.setValue((int) (ent.getValue() * ent.getKey().priority.decayRate));
+            lostPackages.updateStack(ent.getKey(), decayed);
         }
     }
     
