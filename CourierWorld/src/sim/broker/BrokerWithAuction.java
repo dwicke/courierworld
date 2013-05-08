@@ -49,7 +49,12 @@ public class BrokerWithAuction extends Broker
     @Override
     public void performAuctions(List<Courier> courierList, CourierWorld world)
     {
-        avgPacksPerStep = (int) ((succPakcages.getTotalNumPacks() + lostPackages.getTotalNumPacks() + myPackages.getTotalNumPacks()) / world.schedule.getSteps());
+        if (world.schedule.getSteps() == 0)
+            avgPacksPerStep = 0;
+        else
+            avgPacksPerStep = (int) ((succPakcages.getTotalNumPacks() + lostPackages.getTotalNumPacks() + myPackages.getTotalNumPacks()) / world.schedule.getSteps());
+        
+        
         //do this for each package <dest, priority>
         Iterator<Map.Entry<Warehouse.Key, Integer>> iter = getMyPackages().getIterator();
         HashMap<Courier, Warehouse> bids = new HashMap<>();
@@ -104,7 +109,7 @@ public class BrokerWithAuction extends Broker
         {
 
             int state = (int) Math.floor(defaultRate * numStates);
-            double reward = 
+            double reward = 0;
             Q1.set(state, learningRate * Q1.get(state) + (1.0 - learningRate));
         }
 
