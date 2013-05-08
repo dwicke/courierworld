@@ -119,13 +119,28 @@ public class Courier {
         return 1.0 - userBroker.getDefaultRate();
     }
 
+    /**
+     * User gives me the packages and I add the packages to myPackages and I pay
+     * myself
+     *
+     * @param stack
+     * @param fee
+     */
     public void recievePackage(Entry<Warehouse.Key, Integer> stack, double fee) {
         myPackages.updateStack(stack.getKey().dest, stack.getKey().priority, stack.getValue());
         profit += fee; //TODO
     }
 
-    public double getBrokerQuote(Entry<Warehouse.Key, Integer> stack, Node hubNode, List<Broker> brokers) {
-    Warehouse h = new Warehouse();
+    /**
+     * Returns the best quote from the list of brokers
+     *
+     * @param stack
+     * @param hubNode
+     * @param brokers
+     * @return
+     */
+    public double getBrokerQuote(Entry<Warehouse.Key, Integer> stack, List<Broker> brokers) {
+        Warehouse h = new Warehouse();
 
         h.updateStack(stack.getKey(), stack.getValue());
         // loop over the brokers and get a quote.
@@ -135,7 +150,7 @@ public class Courier {
 
         // for each of the brokers get a quote
         for (Broker b : brokers) {
-            double quote = b.getQuote(myPackages);
+            double quote = b.getQuote(h);
             double succRate = b.getDefaultRate();
 
             if (bestQuote == -1) {
@@ -148,12 +163,27 @@ public class Courier {
         }
         return bestQuote;
     }
-    public double getQuote(Entry<Warehouse.Key, Integer> stack, Node hubNode, List<Broker> brokers) {
-        // return the best quote.
-        return getBrokerQuote(stack, hubNode, brokers);
+
+    /**
+     * Returns the amount that I will charge to take the stack from a user.
+     *
+     * @param stack
+     * @param hubNode
+     * @param brokers
+     * @return
+     */
+    public double getQuote(Entry<Warehouse.Key, Integer> stack,  List<Broker> brokers) {
+        // return the best quote also need to factor in a profit margin...
+        return getBrokerQuote(stack, brokers);
 
     }
 
+    /**
+     * Gives the myPacks to the best broker and clears myPacks
+     *
+     * @param brokers
+     * @param myPacks
+     */
     public void sendStacks(List<Broker> brokers, Warehouse myPacks) {
         if (myPacks.hasStack()) {
             Broker bestBroker = null;
@@ -182,11 +212,25 @@ public class Courier {
         }
     }
 
+    /**
+     * Sends all my packages to the best broker given the list of brokers
+     *
+     * @param brokers
+     */
     public void sendPackageToBroker(List<Broker> brokers) {
         sendStacks(brokers, myPackages);
     }
 
-    public Node getBestGlobalNode(Node sourceHub, Entry<Warehouse.Key, Integer> destination, CourierWorld world) {
+    /**
+     * Returns the global node that costs the courier the least to deliver the
+     * stack to from sourceHub.
+     *
+     * @param sourceHub
+     * @param stack
+     * @param world
+     * @return
+     */
+    public Node getBestGlobalNode(Node sourceHub, Entry<Warehouse.Key, Integer> stack, CourierWorld world) {
         // probability of delivering to global node that has the local node
         // stemming from it given priority
         // loop over the packages
@@ -196,25 +240,22 @@ public class Courier {
         // basically same as when doing for local to global excep 
         // so loop over all of the hubs except sourceHub
         Warehouse wh = new Warehouse();
-        wh.updateStack(destination.getKey(), destination.getValue());
-        
+        wh.updateStack(stack.getKey(), stack.getValue());
+
         double bestCost = -1;
-        
+
         for (Node globalNode : world.hubNodes) {
             //get the cost to transfer to that particular hub
-            double costToDeliver = myNetwork.get(new NodeKey(sourceHub, globalNode)) * destination.getValue();
-            double curQuote = getBrokerQuote(destination, globalNode, globalNode.getHub().brokers);
-            if (bestCost == -1)
-            {
+            double costToDeliver = myNetwork.get(new NodeKey(sourceHub, globalNode)) * stack.getValue();
+            double curQuote = getBrokerQuote(stack,  globalNode.getHub().brokers);
+            if (bestCost == -1) {
+                bestCost = curQuote + costToDeliver;
+                best = globalNode;
+            } else if (bestCost > curQuote + costToDeliver) {
                 bestCost = curQuote + costToDeliver;
                 best = globalNode;
             }
-            else if (bestCost > curQuote + costToDeliver)
-            {
-                bestCost = curQuote + costToDeliver;
-                best = globalNode;
-            }
-            
+
         }
 
 
@@ -266,9 +307,8 @@ public class Courier {
                 // find the final destination global hub
                 finalGlobDest = getDestinationGlobalHub(stacks, world);
             } else {
-                // send it to the most profitable node
+                // find the node that costs me the least
                 finalGlobDest = getBestGlobalNode(globalNode, stacks, world);
-
             }
 
 
