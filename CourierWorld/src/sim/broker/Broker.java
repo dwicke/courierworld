@@ -6,6 +6,7 @@ package sim.broker;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import sim.auction.Appraiser;
 import sim.courier.Courier;
@@ -19,6 +20,7 @@ public abstract class Broker implements Appraiser<Warehouse>{
 
     private double defaultRate = 0.0;
     private double profit = 0.0;
+    double bidRate = 0.1;
     private Warehouse myPackages = new Warehouse();
     private Warehouse lostPackages = new Warehouse();
     private Warehouse succPakcages = new Warehouse();
@@ -27,6 +29,11 @@ public abstract class Broker implements Appraiser<Warehouse>{
     // the quote for all of the packages in the warehouse
     public abstract double getQuote(Warehouse myPackages);
 
+    public Warehouse getMyPackages() {
+        return myPackages;
+    }
+    
+    
     /**
      * Returns the percentage of packages the broker
      * has lost.
@@ -76,6 +83,8 @@ public abstract class Broker implements Appraiser<Warehouse>{
         myPackages.decayStacks();
         
     }
+    
+    
 
     
 }

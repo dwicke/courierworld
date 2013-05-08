@@ -11,7 +11,7 @@ import sim.courierworld.NodePackage;
  * This broker ensures that the packages are delivered by using a Dutch auction
  * @author drew
  */
-public class MaxDeliveredBroker extends Broker{
+public class BrokerWithAuction extends Broker{
 
     @Override
     public double getQuote(NodePackage myPackages) {

@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import sim.auction.DutchBidder;
 import sim.auction.EnglishBidder;
@@ -107,6 +108,10 @@ public class Courier {
         return sourceNode;
     }
 
+     public int getSomeStacks(Map.Entry<Warehouse.Key, Integer> stack, double rate)
+    {
+        return (int) (stack.getValue() * Math.random());
+    }
     /**
      * What is the probability of success. Calculated based on the broker
      * success rate. Can't calculate the success rate directly since not
@@ -368,4 +373,6 @@ public class Courier {
 
 
     }
+    
+    
 }

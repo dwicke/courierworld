@@ -8,8 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 import sim.broker.Broker;
-import sim.broker.MaxDeliveredBroker;
-import sim.broker.MaxProfitBroker;
+import sim.broker.BrokerWithAuction;
+import sim.broker.BrokerWithoutAuction;
 import sim.courier.Courier;
 import sim.field.grid.Grid2D;
 import sim.field.grid.SparseGrid2D;
@@ -41,8 +41,8 @@ public class Hub
         int randx = 0, randy = 0;
 
         brokers = new ArrayList<>();
-        brokers.add(new MaxDeliveredBroker());
-        brokers.add(new MaxProfitBroker());
+        brokers.add(new BrokerWithAuction());
+        brokers.add(new BrokerWithoutAuction());
 
         localCouriers = new ArrayList<>();
         for (int i = 0; i < state.maxNumCouriersPerHub; i++)
