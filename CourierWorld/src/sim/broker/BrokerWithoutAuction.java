@@ -63,14 +63,13 @@ public class BrokerWithoutAuction extends Broker {
 
         }
         //decide on how to allocate 
-        
-        for (Courier c : courierList)
+        for (Map.Entry<Courier, Warehouse> en : bids.entrySet())
         {
-            c.myPackages.addAll(bids.get(c));
-            succPakcages.addAll(bids.get(c));
-            
-            profit -= (int)(bidRate * bids.get(c).getTotalNumPacks());
-            
+            en.getKey().myPackages.addAll(en.getValue());
+            succPakcages.addAll(en.getValue());
+
+            profit -= (int) (bidRate * en.getValue().getTotalNumPacks());
+
         }
 
     }

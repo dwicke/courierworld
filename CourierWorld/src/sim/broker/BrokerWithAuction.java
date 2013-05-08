@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import sim.courier.Courier;
 import sim.courierworld.CourierWorld;
 import sim.courierworld.Warehouse;
@@ -84,12 +85,12 @@ public class BrokerWithAuction extends Broker
         }
         //decide on how to allocate 
 
-        for (Courier c : courierList)
+        for (Entry<Courier, Warehouse> en : bids.entrySet())
         {
-            c.myPackages.addAll(bids.get(c));
-            succPakcages.addAll(bids.get(c));
+            en.getKey().myPackages.addAll(en.getValue());
+            succPakcages.addAll(en.getValue());
 
-            profit -= (int) (bidRate * bids.get(c).getTotalNumPacks());
+            profit -= (int) (bidRate * en.getValue().getTotalNumPacks());
 
         }
 
