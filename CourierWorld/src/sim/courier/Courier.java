@@ -42,8 +42,8 @@ public class Courier {
     public void randInit(List<Node> nodeChoice, CourierWorld state, Node hubNode) {
         // Set up the couriers
         // generate a random fully connected graph
-        
-        
+
+
         for (Node n : nodeChoice) {
             for (Node m : nodeChoice) {
                 if (!n.equals(m)) {
@@ -54,8 +54,8 @@ public class Courier {
         }
 
 
-        
-        
+
+
         if (!isGlobal) {
             // must also connect to the global hub
             for (Node n : nodeChoice) {
@@ -108,10 +108,18 @@ public class Courier {
         return sourceNode;
     }
 
-     public int getSomeStacks(Map.Entry<Warehouse.Key, Integer> stack, double rate)
-    {
-        return (int) (stack.getValue() * Math.random());
+    public int getSomeStacks(Map.Entry<Warehouse.Key, Integer> stack, double rate, Node hubNode) {
+
+        if (isGlobal == false && myNetwork.containsKey(new NodeKey(hubNode, stack.getKey().dest))) {
+            return (int) (stack.getValue() * Math.random());
+        }
+        else if (isGlobal == true)
+        {
+            return (int) (stack.getValue() * Math.random());
+        }
+        return 0;
     }
+
     /**
      * What is the probability of success. Calculated based on the broker
      * success rate. Can't calculate the success rate directly since not
@@ -177,7 +185,7 @@ public class Courier {
      * @param brokers
      * @return
      */
-    public double getQuote(Entry<Warehouse.Key, Integer> stack,  List<Broker> brokers) {
+    public double getQuote(Entry<Warehouse.Key, Integer> stack, List<Broker> brokers) {
         // return the best quote also need to factor in a profit margin...
         return getBrokerQuote(stack, brokers);
 
@@ -252,7 +260,7 @@ public class Courier {
         for (Node globalNode : world.hubNodes) {
             //get the cost to transfer to that particular hub
             double costToDeliver = myNetwork.get(new NodeKey(sourceHub, globalNode)) * stack.getValue();
-            double curQuote = getBrokerQuote(stack,  globalNode.getHub().brokers);
+            double curQuote = getBrokerQuote(stack, globalNode.getHub().brokers);
             if (bestCost == -1) {
                 bestCost = curQuote + costToDeliver;
                 best = globalNode;
@@ -365,14 +373,14 @@ public class Courier {
                 }
 
             }
-
-            // deliver to the destination node
-            profit -= (myNetwork.get(new NodeKey(curNode, stacks.getKey().dest)) * (stacks.getValue()));
-
+            // So the courier's profit can get into the negatives
+            if (curNode != stacks.getKey().dest) {
+                
+                // deliver to the destination node
+                profit -= (myNetwork.get(new NodeKey(curNode, stacks.getKey().dest)) * (stacks.getValue()));
+            }
         }
 
 
     }
-    
-    
 }

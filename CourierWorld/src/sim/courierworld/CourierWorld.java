@@ -70,7 +70,7 @@ public class CourierWorld extends SimState implements Steppable
                 allCours.addAll(globalCourierList);
                 allCours.addAll(hubnode.getHub().localCouriers);
                 
-                broker.performAuctions(allCours, this);
+                broker.performAuctions(allCours, this, hubnode);
                 broker.decayPackages();
             }
         }

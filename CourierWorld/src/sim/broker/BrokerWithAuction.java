@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import sim.courier.Courier;
 import sim.courierworld.CourierWorld;
+import sim.courierworld.Node;
 import sim.courierworld.Warehouse;
 
 /**
@@ -48,7 +49,7 @@ public class BrokerWithAuction extends Broker
     }
 
     @Override
-    public void performAuctions(List<Courier> courierList, CourierWorld world)
+    public void performAuctions(List<Courier> courierList, CourierWorld world, Node hubNode)
     {
         if (world.schedule.getSteps() == 0)
             avgPacksPerStep = 0;
@@ -69,7 +70,7 @@ public class BrokerWithAuction extends Broker
             {
                 bids.put(c, new Warehouse());
                 // bid is the number of packs that the courier is willing to take
-                int bid = c.getSomeStacks(stacks, bidRate);
+                int bid = c.getSomeStacks(stacks, bidRate, hubNode);
                 if (bid > 0)
                 {
                     bids.get(c).updateStack(stacks.getKey(), bid);

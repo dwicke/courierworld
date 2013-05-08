@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import sim.courier.Courier;
 import sim.courierworld.CourierWorld;
+import sim.courierworld.Node;
 import sim.courierworld.Warehouse;
 
 /**
@@ -35,7 +36,7 @@ public class BrokerWithoutAuction extends Broker {
     
 
     @Override
-    public void performAuctions(List<Courier> courierList, CourierWorld world) {
+    public void performAuctions(List<Courier> courierList, CourierWorld world, Node hubNode) {
         //get bid rate for current step
         bidRate = upDateBidRate();
         //do this for each package <dest, priority>
@@ -49,7 +50,7 @@ public class BrokerWithoutAuction extends Broker {
             for (Courier c : courierList) {
                 bids.put(c, new Warehouse());
                 // bid is the number of packs that the courier is willing to take
-                int bid = c.getSomeStacks(stacks, bidRate); 
+                int bid = c.getSomeStacks(stacks, bidRate, hubNode); 
                 if (bid > 0) {
                     bids.get(c).updateStack(stacks.getKey(), bid);
                     stacks.setValue(stacks.getValue() - bid);

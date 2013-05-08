@@ -6,10 +6,10 @@ package sim.broker;
 
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import sim.courier.Courier;
 import sim.courierworld.CourierWorld;
+import sim.courierworld.Node;
 import sim.courierworld.Warehouse;
 
 /**
@@ -77,7 +77,7 @@ public abstract class Broker{
         profit += fee;
     }
 
-    public abstract void performAuctions(List<Courier> courierList,  CourierWorld world);
+    public abstract void performAuctions(List<Courier> courierList,  CourierWorld world, Node hubNode);
 
     public void decayPackages() {
         myPackages.decayStacks(lostPackages);
