@@ -70,6 +70,11 @@ public class Courier {
                 Node nextNode = n, prevNode = n;
                 while (nextNode != hubNode) {
                     nextNode = allNodes.get(state.random.nextInt(allNodes.size()));
+                    // ensure that we have no self loops
+                    while(nextNode == prevNode)
+                    {
+                        nextNode = allNodes.get(state.random.nextInt(allNodes.size()));
+                    }
                     double randWeight = state.minViableWeight + state.random.nextDouble() * (state.maxWeight - state.minViableWeight);
                     getMap().put(new NodeKey(prevNode, nextNode), randWeight);
                 }
@@ -77,7 +82,15 @@ public class Courier {
         } else {
             double randWeight = state.minViableWeight + state.random.nextDouble() * (state.maxWeight - state.minViableWeight);
 
-            insertKeyValPair(new NodeKey(nodeChoice.get(state.random.nextInt(nodeChoice.size())), nodeChoice.get(state.random.nextInt(nodeChoice.size()))), randWeight);
+            Node a = nodeChoice.get(state.random.nextInt(nodeChoice.size()));
+            Node b = nodeChoice.get(state.random.nextInt(nodeChoice.size()));
+            // make sure the weight isn't back to itself
+            while(a == b)
+            {
+                a = nodeChoice.get(state.random.nextInt(nodeChoice.size()));
+            }
+            insertKeyValPair(new NodeKey(a, b), randWeight);
+            
         }
     }
 
