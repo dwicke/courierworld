@@ -42,6 +42,8 @@ public class Courier {
     public void randInit(List<Node> nodeChoice, CourierWorld state, Node hubNode) {
         // Set up the couriers
         // generate a random fully connected graph
+        
+        
         for (Node n : nodeChoice) {
             for (Node m : nodeChoice) {
                 if (!n.equals(m)) {
@@ -52,6 +54,8 @@ public class Courier {
         }
 
 
+        
+        
         if (!isGlobal) {
             // must also connect to the global hub
             for (Node n : nodeChoice) {
@@ -60,10 +64,12 @@ public class Courier {
             }
 
             // loop over the nodes that the courier occupies
+            List<Node> allNodes = new ArrayList<>(nodeChoice);
+            allNodes.add(hubNode);
             for (Node n : getSourceNodes()) {
                 Node nextNode = n, prevNode = n;
                 while (nextNode != hubNode) {
-                    nextNode = nodeChoice.get(state.random.nextInt(nodeChoice.size()));
+                    nextNode = allNodes.get(state.random.nextInt(allNodes.size()));
                     double randWeight = state.minViableWeight + state.random.nextDouble() * (state.maxWeight - state.minViableWeight);
                     getMap().put(new NodeKey(prevNode, nextNode), randWeight);
                 }

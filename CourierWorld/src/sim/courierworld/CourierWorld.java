@@ -35,6 +35,8 @@ public class CourierWorld extends SimState implements Steppable
     @Override
     public void step(SimState state)
     {
+        
+        System.err.println("Timestep: " + state.schedule.getSteps());
         //user to local courier
         for (int i = 0; i < grid.allObjects.numObjs; i++)
         {
@@ -142,6 +144,7 @@ public class CourierWorld extends SimState implements Steppable
         super(seed);
     }
 
+    @Override
     public void start()
     {
         super.start();
