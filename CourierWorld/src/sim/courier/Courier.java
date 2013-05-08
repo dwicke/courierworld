@@ -33,8 +33,6 @@ public class Courier {
     private double policy;
     private Broker userBroker; // the broker i used to give user a quote and used to give success rate.
 
-    
-    
     public Courier(boolean isGlobal) {
         myNetwork = new HashMap<>();
         sourceNode = new ArrayList<>();
@@ -126,9 +124,8 @@ public class Courier {
         profit += fee; //TODO
     }
 
-    public double getQuote(Entry<Warehouse.Key, Integer> stack, Node hubNode) {
-
-        Warehouse h = new Warehouse();
+    public double getBrokerQuote(Entry<Warehouse.Key, Integer> stack, Node hubNode, List<Broker> brokers) {
+    Warehouse h = new Warehouse();
 
         h.updateStack(stack.getKey(), stack.getValue());
         // loop over the brokers and get a quote.
@@ -137,7 +134,7 @@ public class Courier {
         double bestQuote = -1;
 
         // for each of the brokers get a quote
-        for (Broker b : hubNode.getHub().brokers) {
+        for (Broker b : brokers) {
             double quote = b.getQuote(myPackages);
             double succRate = b.getDefaultRate();
 
@@ -149,19 +146,22 @@ public class Courier {
                 userBroker = b;
             }
         }
-        // return the best quote.
         return bestQuote;
+    }
+    public double getQuote(Entry<Warehouse.Key, Integer> stack, Node hubNode, List<Broker> brokers) {
+        // return the best quote.
+        return getBrokerQuote(stack, hubNode, brokers);
 
     }
 
-    public void sendPackageToBroker(List<Broker> brokers) {
-        if (myPackages.hasStack()) {
+    public void sendStacks(List<Broker> brokers, Warehouse myPacks) {
+        if (myPacks.hasStack()) {
             Broker bestBroker = null;
             double bestQuote = -1;
 
             // for each of the brokers get a quote
             for (Broker b : brokers) {
-                double quote = b.getQuote(myPackages);
+                double quote = b.getQuote(myPacks);
                 double succRate = b.getDefaultRate();
 
                 if (bestQuote == -1) {
@@ -175,57 +175,75 @@ public class Courier {
 
             // give the broker his fee and the packages
             if (bestBroker != null) {
-                bestBroker.addPackage(myPackages, bestQuote / (1.0 - policy + policy * (1 - bestBroker.getDefaultRate())));
+                bestBroker.addPackage(myPacks, bestQuote / (1.0 - policy + policy * (1 - bestBroker.getDefaultRate())));
                 // i have to reset myPackages I have given them to the broker
-                myPackages.clear();
+                myPacks.clear();
             }
         }
     }
-    
-    public Node getBestGlobalNode(Node sourceHub, Entry<Warehouse.Key, Integer> destination, CourierWorld world)
-    {
+
+    public void sendPackageToBroker(List<Broker> brokers) {
+        sendStacks(brokers, myPackages);
+    }
+
+    public Node getBestGlobalNode(Node sourceHub, Entry<Warehouse.Key, Integer> destination, CourierWorld world) {
         // probability of delivering to global node that has the local node
         // stemming from it given priority
         // loop over the packages
-        Iterator<Entry<Warehouse.Key, Integer>> iter = myPackages.getIterator();
+
         Node best = null;
 
-        while (iter.hasNext()) {
-            
-            // basically they are like a user and the brokers are the
-            // couriers
-            // so loop over all of the hubs except sourceHub
-            
-            for (Node globalNode : world.hubNodes)
+        // basically same as when doing for local to global excep 
+        // so loop over all of the hubs except sourceHub
+        Warehouse wh = new Warehouse();
+        wh.updateStack(destination.getKey(), destination.getValue());
+        
+        double bestCost = -1;
+        
+        for (Node globalNode : world.hubNodes) {
+            //get the cost to transfer to that particular hub
+            double costToDeliver = myNetwork.get(new NodeKey(sourceHub, globalNode)) * destination.getValue();
+            double curQuote = getBrokerQuote(destination, globalNode, globalNode.getHub().brokers);
+            if (bestCost == -1)
             {
-                for(Broker broker : globalNode.getHub().brokers)
-                {
-                    
-                }
+                bestCost = curQuote + costToDeliver;
+                best = globalNode;
+            }
+            else if (bestCost > curQuote + costToDeliver)
+            {
+                bestCost = curQuote + costToDeliver;
+                best = globalNode;
             }
             
         }
-        
+
+
+
         return best;
     }
-    
-    public Node getDestinationGlobalHub(Entry<Warehouse.Key, Integer> destination, CourierWorld world)
-    {
+
+    public Node getDestinationGlobalHub(Entry<Warehouse.Key, Integer> destination, CourierWorld world) {
         Node globalDest = null;
-       
-        for(Node glob : world.hubNodes)
-        {
-            if(glob.getHub().localNodes.contains(destination.getKey().dest))
-            {
+
+        for (Node glob : world.hubNodes) {
+            if (glob.getHub().localNodes.contains(destination.getKey().dest)) {
+                // found the global hub that has the local node as a branch
                 return glob;
             }
         }
-        
+
         // return null otherwise it is bad...
         return globalDest;
-                
+
     }
 
+    /**
+     * The globalNode is where I am located world is the whole world the
+     * SimState
+     *
+     * @param globalNode
+     * @param world
+     */
     public void movePacksGlobally(Node globalNode, CourierWorld world) {
         // moves packages to most profitable broker
         // global couriers are globally connected so
@@ -233,13 +251,37 @@ public class Courier {
         // correct hub where the local destination stems
         // from or to a different hub where it the stacks
         // will be auctioned off next timestep
-       
+
         // for each package decide whether I should deliver to the correct
         // global hub or to deliver to a different hub
-        
-        // first find the destination global hub
-        
-        
+        Iterator<Entry<Warehouse.Key, Integer>> iter = myPackages.getIterator();
+        Warehouse wh = new Warehouse();
+        while (iter.hasNext()) {
+            Entry<Warehouse.Key, Integer> stacks = iter.next();
+            wh.clear();
+            wh.updateStack(stacks.getKey(), stacks.getValue());
+            Node finalGlobDest = null;
+            // deliver to final destination if priority is highest
+            if (stacks.getKey().priority.equals(Warehouse.Priority.EXPRESS)) {
+                // find the final destination global hub
+                finalGlobDest = getDestinationGlobalHub(stacks, world);
+            } else {
+                // send it to the most profitable node
+                finalGlobDest = getBestGlobalNode(globalNode, stacks, world);
+
+            }
+
+
+            if (finalGlobDest != null) {
+                // send to the best broker at the destination hub
+                sendStacks(finalGlobDest.getHub().brokers, wh);
+                // subtract cost to get to that hub
+                profit -= myNetwork.get(new NodeKey(globalNode, finalGlobDest)) * stacks.getValue();
+            }
+
+        }
+
+
     }
 
     /**
@@ -278,10 +320,10 @@ public class Courier {
                 }
 
             }
-            
+
             // deliver to the destination node
             profit -= (myNetwork.get(new NodeKey(curNode, stacks.getKey().dest)) * (stacks.getValue()));
-            
+
         }
 
 

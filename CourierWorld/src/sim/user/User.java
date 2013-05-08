@@ -79,7 +79,7 @@ public class User {
 
             for (Courier cour : couriers) {
                 // must get quote first in order for the courier to say what its success rate is
-                double quote = cour.getQuote(allPackages.getPackage(), hub);
+                double quote = cour.getQuote(allPackages.getPackage(), hub, hub.getHub().brokers);
                 double succRate = cour.getSuccessRate();
 
                 if (bestQuote == -1) {
