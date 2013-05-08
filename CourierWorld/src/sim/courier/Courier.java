@@ -44,6 +44,7 @@ public class Courier {
         // generate a random fully connected graph
 
 
+        // all combonations
         for (Node n : nodeChoice) {
             for (Node m : nodeChoice) {
                 if (!n.equals(m)) {
@@ -52,8 +53,6 @@ public class Courier {
                 }
             }
         }
-
-
 
 
         if (!isGlobal) {
@@ -71,8 +70,7 @@ public class Courier {
                 while (nextNode != hubNode) {
                     nextNode = allNodes.get(state.random.nextInt(allNodes.size()));
                     // ensure that we have no self loops
-                    while(nextNode == prevNode)
-                    {
+                    while (nextNode == prevNode) {
                         nextNode = allNodes.get(state.random.nextInt(allNodes.size()));
                     }
                     double randWeight = state.minViableWeight + state.random.nextDouble() * (state.maxWeight - state.minViableWeight);
@@ -85,12 +83,11 @@ public class Courier {
             Node a = nodeChoice.get(state.random.nextInt(nodeChoice.size()));
             Node b = nodeChoice.get(state.random.nextInt(nodeChoice.size()));
             // make sure the weight isn't back to itself
-            while(a == b)
-            {
+            while (a == b) {
                 a = nodeChoice.get(state.random.nextInt(nodeChoice.size()));
             }
             insertKeyValPair(new NodeKey(a, b), randWeight);
-            
+
         }
     }
 
@@ -121,13 +118,12 @@ public class Courier {
         return sourceNode;
     }
 
-    public int getSomeStacks(Map.Entry<Warehouse.Key, Integer> stack, double rate, Node hubNode) {
+    public int getSomeStacks(Map.Entry<Warehouse.Key, Integer> stack, double rate, Node hubNode, CourierWorld world) {
 
         if (isGlobal == false && myNetwork.containsKey(new NodeKey(hubNode, stack.getKey().dest))) {
             return (int) (stack.getValue() * Math.random());
-        }
-        else if (isGlobal == true)
-        {
+        } else if (isGlobal == true && hubNode != getDestinationGlobalHub(stack, world)) {
+            // don't want to buy it if already at the right global hub
             return (int) (stack.getValue() * Math.random());
         }
         return 0;
@@ -263,7 +259,7 @@ public class Courier {
 
         Node best = null;
 
-        // basically same as when doing for local to global excep 
+        // basically same as when doing for local to global except
         // so loop over all of the hubs except sourceHub
         Warehouse wh = new Warehouse();
         wh.updateStack(stack.getKey(), stack.getValue());
@@ -272,14 +268,17 @@ public class Courier {
 
         for (Node globalNode : world.hubNodes) {
             //get the cost to transfer to that particular hub
-            double costToDeliver = myNetwork.get(new NodeKey(sourceHub, globalNode)) * stack.getValue();
-            double curQuote = getBrokerQuote(stack, globalNode.getHub().brokers);
-            if (bestCost == -1) {
-                bestCost = curQuote + costToDeliver;
-                best = globalNode;
-            } else if (bestCost > curQuote + costToDeliver) {
-                bestCost = curQuote + costToDeliver;
-                best = globalNode;
+            
+            if (globalNode != sourceHub) {
+                double costToDeliver = myNetwork.get(new NodeKey(sourceHub, globalNode)) * stack.getValue();
+                double curQuote = getBrokerQuote(stack, globalNode.getHub().brokers);
+                if (bestCost == -1) {
+                    bestCost = curQuote + costToDeliver;
+                    best = globalNode;
+                } else if (bestCost > curQuote + costToDeliver) {
+                    bestCost = curQuote + costToDeliver;
+                    best = globalNode;
+                }
             }
 
         }
@@ -332,6 +331,7 @@ public class Courier {
             if (stacks.getKey().priority.equals(Warehouse.Priority.EXPRESS)) {
                 // find the final destination global hub
                 finalGlobDest = getDestinationGlobalHub(stacks, world);
+                System.err.println(globalNode + "  " + finalGlobDest);
             } else {
                 // find the node that costs me the least
                 finalGlobDest = getBestGlobalNode(globalNode, stacks, world);
@@ -341,6 +341,7 @@ public class Courier {
             if (finalGlobDest != null) {
                 // send to the best broker at the destination hub
                 sendStacks(finalGlobDest.getHub().brokers, wh);
+                System.err.println(globalNode + "  " + finalGlobDest + " " + world.hubNodes.contains(globalNode) + " " + world.hubNodes.contains(finalGlobDest) + "  " + myNetwork.containsKey(new NodeKey(globalNode, finalGlobDest)));
                 // subtract cost to get to that hub
                 profit -= myNetwork.get(new NodeKey(globalNode, finalGlobDest)) * stacks.getValue();
             }
@@ -388,7 +389,7 @@ public class Courier {
             }
             // So the courier's profit can get into the negatives
             if (curNode != stacks.getKey().dest) {
-                
+
                 // deliver to the destination node
                 profit -= (myNetwork.get(new NodeKey(curNode, stacks.getKey().dest)) * (stacks.getValue()));
             }

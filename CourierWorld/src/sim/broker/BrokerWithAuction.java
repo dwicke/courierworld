@@ -70,7 +70,7 @@ public class BrokerWithAuction extends Broker
             {
                 bids.put(c, new Warehouse());
                 // bid is the number of packs that the courier is willing to take
-                int bid = c.getSomeStacks(stacks, bidRate, hubNode);
+                int bid = c.getSomeStacks(stacks, bidRate, hubNode, world);
                 if (bid > 0)
                 {
                     bids.get(c).updateStack(stacks.getKey(), bid);

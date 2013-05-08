@@ -24,8 +24,7 @@ import sim.util.Bag;
  *
  * @author drew
  */
-public class CourierWorld extends SimState implements Steppable
-{
+public class CourierWorld extends SimState implements Steppable {
 
     public int gridSize = 500;
     public SparseGrid2D grid = new SparseGrid2D(gridSize, gridSize);
@@ -33,53 +32,56 @@ public class CourierWorld extends SimState implements Steppable
     public List<Courier> globalCourierList;
 
     @Override
-    public void step(SimState state)
-    {
-        
+    public void step(SimState state) {
+
         System.err.println("Timestep: " + state.schedule.getSteps());
         //user to local courier
-        for (int i = 0; i < grid.allObjects.numObjs; i++)
-        {
+        for (int i = 0; i < grid.allObjects.numObjs; i++) {
             Node node = (Node) grid.allObjects.objs[i];
 
-            if (!node.isHub())
-            {
+            if (!node.isHub()) {
                 // generate a package                
                 node.userToCourier(this);
             }
         }
 
         // local courier to broker
-        for (Node hubnode : hubNodes)
-        {
-            for (Courier cour : hubnode.getHub().localCouriers)
-            {
+        for (Node hubnode : hubNodes) {
+            for (Courier cour : hubnode.getHub().localCouriers) {
                 cour.sendPackageToBroker(hubnode.getHub().brokers);
             }
         }
-        
-        
-        
+
+
+
         // broker to couriers through auction in each hub
-        for (Node hubnode : hubNodes)
-        {
+        for (Node hubnode : hubNodes) {
             // perform an auction with each broker
-            for (Broker broker : hubnode.getHub().brokers)
-            {
+            for (Broker broker : hubnode.getHub().brokers) {
                 List<Courier> allCours = new ArrayList<>();
                 allCours.addAll(globalCourierList);
                 allCours.addAll(hubnode.getHub().localCouriers);
-                
+
                 broker.performAuctions(allCours, this, hubnode);
                 broker.decayPackages();
+                // must immediatly move packs globally since this is the only time
+                // I know the true source.
+                // global courier to broker
+                for (Courier gCour : globalCourierList) {
+                    // moves packages to most profitable broker
+                    // global couriers are globally connected so
+                    // they have the option of transporting to the
+                    // correct hub where the local destination stems
+                    // from or to a different hub where it the stacks
+                    // will be auctioned off next timestep
+                    gCour.movePacksGlobally(hubnode, this);
+                }
             }
         }
 
         // local courier to user
-        for (Node hubnode : hubNodes)
-        {
-            for (Courier cour : hubnode.getHub().localCouriers)
-            {
+        for (Node hubnode : hubNodes) {
+            for (Courier cour : hubnode.getHub().localCouriers) {
                 // so the local couriers deliver the stacks to the
                 // destination nodes.  Since the local couriers
                 // are fully connected to all other nodes in the
@@ -90,25 +92,11 @@ public class CourierWorld extends SimState implements Steppable
             }
         }
 
-        // global courier to broker
-        for (Node hubNode : hubNodes)
-        {
-            for (Courier gCour : globalCourierList)
-            {
-                // moves packages to most profitable broker
-                // global couriers are globally connected so
-                // they have the option of transporting to the
-                // correct hub where the local destination stems
-                // from or to a different hub where it the stacks
-                // will be auctioned off next timestep
-                gCour.movePacksGlobally(hubNode, this);
-            }
-        }
-        
+
+
     }
 
-    public enum WorldProperties
-    {
+    public enum WorldProperties {
 
         numberNodes,
         numSmallCouriers,
@@ -139,20 +127,17 @@ public class CourierWorld extends SimState implements Steppable
     //public PackageGenerator pGen;
     //public double decayRate;
 
-    public CourierWorld(long seed)
-    {
+    public CourierWorld(long seed) {
         super(seed);
     }
 
     @Override
-    public void start()
-    {
+    public void start() {
         super.start();
-        globalCourierList = new  ArrayList<>();
+        globalCourierList = new ArrayList<>();
         // Need to load params from file
         Properties prop = new Properties();
-        try
-        {
+        try {
             // the configuration file name
             String fileName = "world.config";
             InputStream is = new FileInputStream(fileName);
@@ -160,10 +145,8 @@ public class CourierWorld extends SimState implements Steppable
             // load the properties file
             prop.load(is);
 
-            for (String propName : prop.stringPropertyNames())
-            {
-                switch (WorldProperties.valueOf(propName))
-                {
+            for (String propName : prop.stringPropertyNames()) {
+                switch (WorldProperties.valueOf(propName)) {
                     case numberNodes:
                         numberNodes = Integer.parseInt(prop.getProperty(propName));
                         break;
@@ -188,10 +171,8 @@ public class CourierWorld extends SimState implements Steppable
             }
 
 
-        } catch (FileNotFoundException e)
-        {
-        } catch (IOException e)
-        {
+        } catch (FileNotFoundException e) {
+        } catch (IOException e) {
         }
 
 
@@ -201,22 +182,19 @@ public class CourierWorld extends SimState implements Steppable
 
         int userIndex = 0;
         //setup global courier
-        for (int i = 0; i < numGlobalCouriers; i++)
-        {
+        for (int i = 0; i < numGlobalCouriers; i++) {
             Courier gc = new Courier(true);
             globalCourierList.add(gc);
         }
         hubNodes = new ArrayList<>();
         //initialize the hubs and local couriers inside it
-        for (int i = 0; i < numHubs; i++)
-        {
+        for (int i = 0; i < numHubs; i++) {
             Hub h = new Hub(this);
             h.setup(userIndex);
             hubNodes.add(h.myNode);
         }
         //setup the cost network for the global courier
-        for (Courier c : globalCourierList)
-        {
+        for (Courier c : globalCourierList) {
             c.randInit(hubNodes, this, null);
         }
 
@@ -224,8 +202,7 @@ public class CourierWorld extends SimState implements Steppable
 
     }
 
-    public static void main(String[] args)
-    {
+    public static void main(String[] args) {
         doLoop(CourierWorld.class, args);
         System.exit(0);
     }
