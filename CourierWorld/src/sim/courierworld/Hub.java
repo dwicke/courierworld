@@ -118,7 +118,8 @@ public class Hub
                 // added local node to grid
                 state.grid.setObjectLocation(userNode, nodex, nodey);
 
-                if (courierCount > state.maxNumCouriersPerHub)
+                // now add the couriers that service that user
+                if (courierCount >= state.maxNumCouriersPerHub)
                 {
                     // add random number of couriers to the userNode
                     int numCouriers = state.random.nextInt(state.maxNumCouriersPerNode - state.minNumCouriersPerNode) + state.minNumCouriersPerNode;
