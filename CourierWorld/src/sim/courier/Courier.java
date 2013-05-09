@@ -19,7 +19,7 @@ import sim.courierworld.*;
  */
 public class Courier {
 
-    private double profit;
+    public double profit;
     public Warehouse myPackages;
     private boolean isGlobal;
     // map the edges to costs
