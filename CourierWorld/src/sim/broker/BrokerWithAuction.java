@@ -63,6 +63,16 @@ public class BrokerWithAuction extends Broker {
     }
 
     @Override
+    public void updateServiceRate() {
+        serviceRate = PI1.get(getState());
+        if(Math.random() < explorationFactor) {
+            serviceRate = PI2.get((int)(Math.floor(Math.random()*numStates)));
+        }
+    }
+    
+    
+
+    @Override
     public void performAuctions(List<Courier> courierList, CourierWorld world, Node hubNode) {
         currentAuctionedPacksPerStep = 0;
         if (world.schedule.getSteps() == 0) {
@@ -79,7 +89,7 @@ public class BrokerWithAuction extends Broker {
 
         double currentBidRate = PI2.get(getState());
         if (world.random.nextDouble() < explorationFactor) {
-            currentBidRate = PI2.get(world.random.nextInt(numActions));
+            currentBidRate = PI2.get(world.random.nextInt(numStates));
         }
         while (iter.hasNext()) {
             Map.Entry<Warehouse.Key, Integer> stacks = iter.next();
@@ -164,7 +174,7 @@ public class BrokerWithAuction extends Broker {
                 }
 
             }
-            //Hi
+            
 
             //update the bid and service rates for the previous state
             PI1.set(prevState, (maxServiceRate - minServiceRate) * serviceActionIdx / numActions);

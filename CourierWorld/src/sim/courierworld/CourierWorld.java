@@ -47,6 +47,9 @@ public class CourierWorld extends SimState implements Steppable {
 
         // local courier to broker
         for (Node hubnode : hubNodes) {
+            for (Broker brok : hubnode.getHub().brokers){
+                brok.updateServiceRate();
+            }
             for (Courier cour : hubnode.getHub().localCouriers) {
                 cour.sendPackageToBroker(hubnode.getHub().brokers);
             }

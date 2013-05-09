@@ -85,6 +85,8 @@ public abstract class Broker{
         
         
     }
+
+    public abstract void updateServiceRate();
     
     
 
