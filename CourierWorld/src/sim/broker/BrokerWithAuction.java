@@ -164,6 +164,7 @@ public class BrokerWithAuction extends Broker {
                 }
 
             }
+            //Hi
 
             //update the bid and service rates for the previous state
             PI1.set(prevState, (maxServiceRate - minServiceRate) * serviceActionIdx / numActions);
