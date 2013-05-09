@@ -28,6 +28,11 @@ public class User {
     private Node hub;
     public double policy;
 
+    public Node getHub() {
+        return hub;
+    }
+
+    
     public User(int max_packages, long userID, Node hub, double policy) {
         this.max_packages = max_packages;
         this.userID = userID;

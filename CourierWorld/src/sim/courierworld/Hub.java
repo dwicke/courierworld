@@ -14,6 +14,8 @@ import sim.courier.Courier;
 import sim.field.grid.Grid2D;
 import sim.field.grid.SparseGrid2D;
 import sim.field.network.Network;
+import sim.portrayal.Inspector;
+import sim.portrayal.SimpleInspector;
 import sim.user.User;
 import sim.util.Bag;
 
@@ -29,6 +31,8 @@ public class Hub {
     public List<Node> localNodes; // local nodes that branch out from this hub
     public Node myNode;
 
+    
+    
     Hub(CourierWorld state) {
         this.state = state;
     }

@@ -24,6 +24,7 @@ import sim.courierworld.Warehouse;
 public class BrokerWithAuction extends Broker {
 
     public double explorationFactor = 0.1;
+    public double interactionRate = 0.2;
     public int prevState = 0;
     public int numActions = 5;
     public double flowFactor = 0.1;
@@ -151,6 +152,10 @@ public class BrokerWithAuction extends Broker {
             }
 
             reward2 = 1.0 - currentDecayedPacks / (1.0 + currentAuctionedPacksPerStep);
+            double rewardc1 = (1.0 - interactionRate)*reward1 + interactionRate*reward2;
+            double rewardc2 = (1.0 - interactionRate)*reward2 + interactionRate*reward1;
+            reward1 = rewardc1;
+            reward2 = rewardc2;
 
             int currentActionServiceRate = (int) Math.floor(numActions * serviceRate / (maxServiceRate - minServiceRate));
             int currentActionBidRate = (int) Math.floor(numActions * bidRate / (maxBidRate - minBidRate));
@@ -163,6 +168,7 @@ public class BrokerWithAuction extends Broker {
             double max_q1 = Q1.get(0).get(0);
             double max_q2 = Q2.get(0).get(0);
 
+            //choose the best based on pareto optimality
             for (int i = 0; i < numActions; i++) {
                 if (max_q1 < Q1.get(prevState).get(i)) {
                     max_q1 = Q1.get(prevState).get(i);

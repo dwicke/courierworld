@@ -81,4 +81,9 @@ public class BrokerWithoutAuction extends Broker {
        return  Math.random()*(maxBaseRate - minBaseRate) + minBaseRate;
     }
 
+    @Override
+    public void updateServiceRate() {
+        
+    }
+
 }
