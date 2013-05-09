@@ -93,7 +93,7 @@ public class Hub {
         localNodes = new ArrayList<>();
         for (int i = 0; i < state.numLocalNode; i++) {
             if (state.random.nextDouble() < probGenNode) {
-                User user = new User(state.numMaxPkgs, useIndex, hubNode, state.maxPolicyVal * state.random.nextDouble());
+                User user = new User(state.numMaxPkgs, useIndex, hubNode, state.maxPolicyVal * state.random.nextDouble(), state.randGivePack);
                 Node userNode = new Node(user);
 
                 int nodex = -1, nodey = -1;

@@ -30,6 +30,7 @@ public class CourierWorld extends SimState implements Steppable {
     public SparseGrid2D grid = new SparseGrid2D(gridSize, gridSize);
     public int minNumCouriersPerNode = 2;
     public List<Courier> globalCourierList;
+    double randGivePack = 0.8;// chance that courier will decide to give a courier a package while a courier is delivering packages
 
     @Override
     public void step(SimState state) {

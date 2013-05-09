@@ -7,6 +7,7 @@ package sim.user;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import sim.courier.Courier;
 import sim.courierworld.CourierWorld;
 import sim.courierworld.Hub;
@@ -21,23 +22,23 @@ import sim.courierworld.Warehouse;
  */
 public class User {
 
-    
     private Warehouse allPackages;
     private int max_packages;
     private long userID;
     private Node hub;
     public double policy;
+    private double randGivePack;
 
     public Node getHub() {
         return hub;
     }
 
-    
-    public User(int max_packages, long userID, Node hub, double policy) {
+    public User(int max_packages, long userID, Node hub, double policy, double randGivePack) {
         this.max_packages = max_packages;
         this.userID = userID;
         this.hub = hub;
         this.policy = policy;
+        this.randGivePack = randGivePack;
         allPackages = new Warehouse();
     }
 
@@ -54,25 +55,27 @@ public class User {
             if (!randNode.isHub()) {
                 isGood = true;
                 int numPacks = world.random.nextInt(max_packages);
-                if(numPacks > 0)
+                if (numPacks > 0) {
                     allPackages.updateStack(randNode, Warehouse.Priority.values()[world.random.nextInt(Warehouse.Priority.values().length)], numPacks);
+                }
             }
         }
 
     }
-    
+
     /**
      * Returns whether the user gave a package.
-     * @param courier 
+     *
+     * @param courier
      */
-    public boolean randGivePackage(Courier courier, CourierWorld world)
-    {
-        ArrayList<Courier> c = new ArrayList<>();
-        c.add(courier);
-        // should be based on a policy
-        givePackage(c, world);
+    public Map.Entry<Warehouse.Key, Integer> randGivePackage(Courier courier, CourierWorld world) {
         
-        return true;
+        // should be based on a policy
+        if (world.random.nextDouble() < randGivePack) {
+            generatePackages(world);
+            return (allPackages.getTotalNumPacks() == 0) ? null : allPackages.getPackage();
+        }
+        return null;
     }
 
     //user gets quotes from different courier and gives packages to the courier with best quote

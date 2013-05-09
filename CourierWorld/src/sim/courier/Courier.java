@@ -125,7 +125,7 @@ public class Courier {
         } else if (isGlobal == true && hubNode != getDestinationGlobalHub(stack, world)) {
             // don't want to buy it if already at the right global hub
             //System.err.println(hubNode + "  " + getDestinationGlobalHub(stack, world));
-            
+
             return (int) (stack.getValue() * Math.random());
         }
         return 0;
@@ -270,7 +270,7 @@ public class Courier {
 
         for (Node globalNode : world.hubNodes) {
             //get the cost to transfer to that particular hub
-            
+
             if (globalNode != sourceHub) {
                 double costToDeliver = myNetwork.get(new NodeKey(sourceHub, globalNode)) * stack.getValue();
                 double curQuote = getBrokerQuote(stack, globalNode.getHub().brokers);
@@ -345,13 +345,11 @@ public class Courier {
                 sendStacks(finalGlobDest.getHub().brokers, wh);
                 // must remove from myPackages since delivered
                 iter.remove();
-                
+
                 // subtract cost to get to that hub
                 profit -= myNetwork.get(new NodeKey(globalNode, finalGlobDest)) * stacks.getValue();
-                
-            }
-            else
-            {
+
+            } else {
                 System.err.println("finalGlobDest was null");
             }
 
@@ -369,6 +367,7 @@ public class Courier {
         Iterator<Entry<Warehouse.Key, Integer>> iter = myPackages.getIterator();
         int maxRandTravel = world.maxRandTravel;
 
+        ArrayList<Entry<Warehouse.Key, Integer>> collectedWarehouse = new ArrayList<>();
         while (iter.hasNext()) {
             Entry<Warehouse.Key, Integer> stacks = iter.next();
             Node curNode = globalNode;// where I am right now
@@ -391,7 +390,11 @@ public class Courier {
                 if (next != null) {
                     // not sure if i should do the division...
                     profit -= (best * (stacks.getValue() / randTrav));
-                    next.getUser().randGivePackage(this, world);
+                    // check if the node has any packages for me.
+                    Entry<Warehouse.Key, Integer> wh = next.getUser().randGivePackage(this, world);
+                    if (wh != null) {
+                        collectedWarehouse.add(wh);
+                    }
                     curNode = next;
                 }
 
@@ -402,6 +405,11 @@ public class Courier {
                 // deliver to the destination node
                 profit -= (myNetwork.get(new NodeKey(curNode, stacks.getKey().dest)) * (stacks.getValue()));
             }
+
+        }
+
+        for (Entry<Warehouse.Key, Integer> wh : collectedWarehouse) {
+            myPackages.updateStack(wh.getKey(), wh.getValue());
         }
 
 
