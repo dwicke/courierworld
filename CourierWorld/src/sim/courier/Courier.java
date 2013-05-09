@@ -124,6 +124,8 @@ public class Courier {
             return (int) (stack.getValue() * Math.random());
         } else if (isGlobal == true && hubNode != getDestinationGlobalHub(stack, world)) {
             // don't want to buy it if already at the right global hub
+            //System.err.println(hubNode + "  " + getDestinationGlobalHub(stack, world));
+            
             return (int) (stack.getValue() * Math.random());
         }
         return 0;
@@ -331,7 +333,7 @@ public class Courier {
             if (stacks.getKey().priority.equals(Warehouse.Priority.EXPRESS)) {
                 // find the final destination global hub
                 finalGlobDest = getDestinationGlobalHub(stacks, world);
-                System.err.println(globalNode + "  " + finalGlobDest);
+                //System.err.println(globalNode + "  " + finalGlobDest);
             } else {
                 // find the node that costs me the least
                 finalGlobDest = getBestGlobalNode(globalNode, stacks, world);
@@ -341,9 +343,16 @@ public class Courier {
             if (finalGlobDest != null) {
                 // send to the best broker at the destination hub
                 sendStacks(finalGlobDest.getHub().brokers, wh);
-                System.err.println(globalNode + "  " + finalGlobDest + " " + world.hubNodes.contains(globalNode) + " " + world.hubNodes.contains(finalGlobDest) + "  " + myNetwork.containsKey(new NodeKey(globalNode, finalGlobDest)));
+                // must remove from myPackages since delivered
+                iter.remove();
+                
                 // subtract cost to get to that hub
                 profit -= myNetwork.get(new NodeKey(globalNode, finalGlobDest)) * stacks.getValue();
+                
+            }
+            else
+            {
+                System.err.println("finalGlobDest was null");
             }
 
         }
@@ -396,5 +405,9 @@ public class Courier {
         }
 
 
+    }
+
+    public boolean isGlobal() {
+        return isGlobal;
     }
 }

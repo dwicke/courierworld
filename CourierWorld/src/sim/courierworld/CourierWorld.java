@@ -56,6 +56,7 @@ public class CourierWorld extends SimState implements Steppable {
 
         // broker to couriers through auction in each hub
         for (Node hubnode : hubNodes) {
+            
             // perform an auction with each broker
             for (Broker broker : hubnode.getHub().brokers) {
                 List<Courier> allCours = new ArrayList<>();
@@ -64,18 +65,19 @@ public class CourierWorld extends SimState implements Steppable {
 
                 broker.performAuctions(allCours, this, hubnode);
                 broker.decayPackages();
-                // must immediatly move packs globally since this is the only time
-                // I know the true source.
-                // global courier to broker
-                for (Courier gCour : globalCourierList) {
-                    // moves packages to most profitable broker
-                    // global couriers are globally connected so
-                    // they have the option of transporting to the
-                    // correct hub where the local destination stems
-                    // from or to a different hub where it the stacks
-                    // will be auctioned off next timestep
-                    gCour.movePacksGlobally(hubnode, this);
-                }
+
+            }
+            // must immediatly move packs globally since this is the only time
+            // I know the true source.
+            // global courier to broker
+            for (Courier gCour : globalCourierList) {
+                // moves packages to most profitable broker
+                // global couriers are globally connected so
+                // they have the option of transporting to the
+                // correct hub where the local destination stems
+                // from or to a different hub where it the stacks
+                // will be auctioned off next timestep
+                gCour.movePacksGlobally(hubnode, this);
             }
         }
 
