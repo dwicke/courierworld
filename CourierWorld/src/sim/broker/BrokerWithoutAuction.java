@@ -69,8 +69,9 @@ public class BrokerWithoutAuction extends Broker {
             en.getKey().myPackages.addAll(en.getValue());
             succPakcages.addAll(en.getValue());
 
-            profit -= (int) (bidRate * en.getValue().getTotalNumPacks());
-
+            profit -= (double) (bidRate * en.getValue().getTotalNumPacks());
+            en.getKey().profit += (double) (bidRate * en.getValue().getTotalNumPacks());
+            
         }
 
     }
