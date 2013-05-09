@@ -30,7 +30,7 @@ public class BrokerWithoutAuction extends Broker {
     @Override
     public double getQuote(Warehouse myPackages)
     {
-        return bidRate*profitFactor;
+        return bidRate*profitFactor*serviceRate;
     }
 
     
