@@ -380,7 +380,7 @@ public class Courier {
                 // find the best next node.
                 for (Node localNode : globalNode.getHub().localNodes) {
                     if (curNode != localNode) {
-                        if (myNetwork.get(new NodeKey(curNode, localNode)) < best) {
+                        if (myNetwork.get(new NodeKey(curNode, localNode)) > best) {
                             best = myNetwork.get(new NodeKey(curNode, localNode));
                             next = localNode;
                         }
@@ -389,13 +389,15 @@ public class Courier {
 
                 if (next != null) {
                     // not sure if i should do the division...
-                    profit -= (best * (stacks.getValue() / randTrav));
+
+                    profit -= (best * stacks.getValue());
                     // check if the node has any packages for me.
                     Entry<Warehouse.Key, Integer> wh = next.getUser().randGivePackage(this, world);
                     if (wh != null) {
                         collectedWarehouse.add(wh);
                     }
                     curNode = next;
+
                 }
 
             }
