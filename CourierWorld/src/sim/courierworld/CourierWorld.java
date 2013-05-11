@@ -53,8 +53,14 @@ public class CourierWorld extends SimState implements Steppable {
     public int minNumCouriersPerNode = 2;
     public List<Courier> globalCourierList;
     double randGivePack = 0.8;// chance that courier will decide to give a courier a package while a courier is delivering packages
-    public Network logisticNetwork = new Network();
+    public Network logisticNetwork = new Network(false);// undirecterd graph
 
+    
+    
+
+    
+    
+    
     @Override
     public void step(SimState state) {
 
@@ -223,4 +229,178 @@ public class CourierWorld extends SimState implements Steppable {
         doLoop(CourierWorld.class, args);
         System.exit(0);
     }
+
+    public int getGridSize() {
+        return gridSize;
+    }
+
+    public void setGridSize(int gridSize) {
+        this.gridSize = gridSize;
+    }
+
+    public double getMaxPolicyVal() {
+        return maxPolicyVal;
+    }
+
+    public void setMaxPolicyVal(double maxPolicyVal) {
+        this.maxPolicyVal = maxPolicyVal;
+    }
+
+    public int getNumberNodes() {
+        return numberNodes;
+    }
+
+    public void setNumberNodes(int numberNodes) {
+        this.numberNodes = numberNodes;
+    }
+
+    public int getNumSmallCouriers() {
+        return numSmallCouriers;
+    }
+
+    public void setNumSmallCouriers(int numSmallCouriers) {
+        this.numSmallCouriers = numSmallCouriers;
+    }
+
+    public int getNumGlobalCouriers() {
+        return numGlobalCouriers;
+    }
+
+    public void setNumGlobalCouriers(int numGlobalCouriers) {
+        this.numGlobalCouriers = numGlobalCouriers;
+    }
+
+    public int getNumHubs() {
+        return numHubs;
+    }
+
+    public void setNumHubs(int numHubs) {
+        this.numHubs = numHubs;
+    }
+
+    public int getDistFromHubs() {
+        return distFromHubs;
+    }
+
+    public void setDistFromHubs(int distFromHubs) {
+        this.distFromHubs = distFromHubs;
+    }
+
+    public int getNumLocalNode() {
+        return numLocalNode;
+    }
+
+    public void setNumLocalNode(int numLocalNode) {
+        this.numLocalNode = numLocalNode;
+    }
+
+    public int getNumMaxGlobCourierPerHub() {
+        return numMaxGlobCourierPerHub;
+    }
+
+    public void setNumMaxGlobCourierPerHub(int numMaxGlobCourierPerHub) {
+        this.numMaxGlobCourierPerHub = numMaxGlobCourierPerHub;
+    }
+
+    public int getNumMinGlobCourierPerHub() {
+        return numMinGlobCourierPerHub;
+    }
+
+    public void setNumMinGlobCourierPerHub(int numMinGlobCourierPerHub) {
+        this.numMinGlobCourierPerHub = numMinGlobCourierPerHub;
+    }
+
+    public int getNumMaxPkgs() {
+        return numMaxPkgs;
+    }
+
+    public void setNumMaxPkgs(int numMaxPkgs) {
+        this.numMaxPkgs = numMaxPkgs;
+    }
+
+    public int getLocalCliqueSize() {
+        return localCliqueSize;
+    }
+
+    public void setLocalCliqueSize(int localCliqueSize) {
+        this.localCliqueSize = localCliqueSize;
+    }
+
+    public int getHubNhbrSize() {
+        return hubNhbrSize;
+    }
+
+    public void setHubNhbrSize(int hubNhbrSize) {
+        this.hubNhbrSize = hubNhbrSize;
+    }
+
+    public int getMaxNumCouriersPerHub() {
+        return maxNumCouriersPerHub;
+    }
+
+    public void setMaxNumCouriersPerHub(int maxNumCouriersPerHub) {
+        this.maxNumCouriersPerHub = maxNumCouriersPerHub;
+    }
+
+    public int getMaxNumCouriersPerNode() {
+        return maxNumCouriersPerNode;
+    }
+
+    public void setMaxNumCouriersPerNode(int maxNumCouriersPerNode) {
+        this.maxNumCouriersPerNode = maxNumCouriersPerNode;
+    }
+
+    public double getMaxWeight() {
+        return maxWeight;
+    }
+
+    public void setMaxWeight(double maxWeight) {
+        this.maxWeight = maxWeight;
+    }
+
+    public double getMinWeight() {
+        return minWeight;
+    }
+
+    public void setMinWeight(double minWeight) {
+        this.minWeight = minWeight;
+    }
+
+    public double getMinViableWeight() {
+        return minViableWeight;
+    }
+
+    public void setMinViableWeight(double minViableWeight) {
+        this.minViableWeight = minViableWeight;
+    }
+
+    public int getMaxRandTravel() {
+        return maxRandTravel;
+    }
+
+    public void setMaxRandTravel(int maxRandTravel) {
+        this.maxRandTravel = maxRandTravel;
+    }
+
+    public int getMinNumCouriersPerNode() {
+        return minNumCouriersPerNode;
+    }
+
+    public void setMinNumCouriersPerNode(int minNumCouriersPerNode) {
+        this.minNumCouriersPerNode = minNumCouriersPerNode;
+    }
+
+    public double getRandGivePack() {
+        return randGivePack;
+    }
+
+    public void setRandGivePack(double randGivePack) {
+        this.randGivePack = randGivePack;
+    }
+    
+    
+    
+    
+    
+    
 }

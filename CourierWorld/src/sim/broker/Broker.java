@@ -25,6 +25,11 @@ public abstract class Broker{
     public Warehouse myPackages = new Warehouse();
     public Warehouse lostPackages = new Warehouse();
     public Warehouse succPakcages = new Warehouse();
+
+    public double getProfit() {
+        return profit;
+    }
+    
     
     
     // the quote for all of the packages in the warehouse

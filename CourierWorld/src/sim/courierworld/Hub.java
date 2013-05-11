@@ -31,6 +31,10 @@ public class Hub {
     public List<Node> localNodes; // local nodes that branch out from this hub
     public Node myNode;
 
+    public List<Broker> getBrokers() {
+        return brokers;
+    }
+
     
     
     Hub(CourierWorld state) {
