@@ -96,6 +96,7 @@ public class CourierWorldWithUI extends GUIState {
         SimpleEdgePortrayal2D p = new SimpleEdgePortrayal2D(Color.lightGray, Color.lightGray, null);
         p.setShape(SimpleEdgePortrayal2D.SHAPE_THIN_LINE);
         p.setBaseWidth(3);
+        
         edgePortrayal.setPortrayalForAll(p);
         // reschedule the displayer
         display.reset();

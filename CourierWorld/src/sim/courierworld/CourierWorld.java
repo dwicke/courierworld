@@ -17,6 +17,7 @@ import sim.engine.SimState;
 import sim.engine.Steppable;
 import sim.field.grid.Grid2D;
 import sim.field.grid.SparseGrid2D;
+import sim.field.network.Edge;
 import sim.field.network.Network;
 import sim.util.Bag;
 
@@ -54,7 +55,7 @@ public class CourierWorld extends SimState implements Steppable {
     public List<Courier> globalCourierList;
     double randGivePack = 0.8;// chance that courier will decide to give a courier a package while a courier is delivering packages
     public Network logisticNetwork = new Network(false);// undirecterd graph
-
+    public Edge[][] adgList;
     
     
 
@@ -64,6 +65,7 @@ public class CourierWorld extends SimState implements Steppable {
     @Override
     public void step(SimState state) {
 
+        
         System.err.println("Timestep: " + state.schedule.getSteps());
         //user to local courier
         for (int i = 0; i < grid.allObjects.numObjs; i++) {
@@ -81,7 +83,7 @@ public class CourierWorld extends SimState implements Steppable {
                 brok.updateServiceRate();
             }
             for (Courier cour : hubnode.getHub().localCouriers) {
-                cour.sendPackageToBroker(hubnode.getHub().brokers);
+                cour.sendPackageToBroker(hubnode.getHub().brokers, this);
             }
         }
 
@@ -211,16 +213,25 @@ public class CourierWorld extends SimState implements Steppable {
                 Node nodej = (Node) grid.allObjects.objs[j];
                 if(!nodei.isHub() && !nodej.isHub()){
                     if(nodei.getUser().getHub().hashCode() == nodej.getUser().getHub().hashCode())
-                     logisticNetwork.addEdge(nodei, nodej, "LC");
+                     logisticNetwork.addEdge(nodei, nodej, new Throughput("LC"));
                 }
                 else if(nodei.isHub() && nodej.isHub()){
-                    logisticNetwork.addEdge(nodei, nodej, "GC");
-                    
+                    logisticNetwork.addEdge(nodei, nodej, new Throughput("GC"));
+                }
+                else if (nodei.isHub() && !nodej.isHub())
+                {
+                    if(nodei.getHub().localNodes.contains(nodej))
+                        logisticNetwork.addEdge(nodei, nodej, new Throughput("LGC"));
                 }
                
             }
 
         }
+        
+        adgList = logisticNetwork.getAdjacencyMatrix();
+        
+        
+        
         schedule.scheduleRepeating(this);
 
     }

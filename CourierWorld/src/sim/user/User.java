@@ -12,6 +12,7 @@ import sim.courier.Courier;
 import sim.courierworld.CourierWorld;
 import sim.courierworld.Hub;
 import sim.courierworld.Node;
+import sim.courierworld.Throughput;
 import sim.courierworld.Warehouse;
 
 /**
@@ -79,9 +80,11 @@ public class User {
     }
 
     //user gets quotes from different courier and gives packages to the courier with best quote
-    public void givePackage(List<Courier> couriers, CourierWorld world) {
+    public void givePackage(List<Courier> couriers, CourierWorld world, Node from) {
         generatePackages(world);
         if (allPackages.hasStack()) {
+            
+            
             Courier bestCourier = null;
             double bestQuote = -1;
 
@@ -100,6 +103,9 @@ public class User {
             }
 
             if (bestCourier != null) {
+                // add the number of packages to the network edge throughput
+                ((Throughput)world.adgList[world.logisticNetwork.getNodeIndex(hub)][world.logisticNetwork.getNodeIndex(from)].info).addStacks(allPackages.getTotalNumPacks(), world.schedule.getSteps());
+                System.err.println(world.logisticNetwork.getNodeIndex(hub) + "  " + world.logisticNetwork.getNodeIndex(from) + "  " + ((Throughput)world.adgList[world.logisticNetwork.getNodeIndex(hub)][world.logisticNetwork.getNodeIndex(from)].info).getThroughput());
                 bestCourier.recievePackage(allPackages.getPackage(), bestQuote / (1.0 - policy + policy * (1 - bestCourier.getSuccessRate())));
             }
         }

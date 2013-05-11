@@ -27,7 +27,13 @@ public class Courier {
     private List<Node> sourceNode;
     private double policy;
     private Broker userBroker; // the broker i used to give user a quote and used to give success rate.
-
+    private int chosenBroker;
+    
+    public int getChosenBroker()
+    {
+        return chosenBroker;
+    }
+    
     public Courier(boolean isGlobal) {
         myNetwork = new HashMap<>();
         sourceNode = new ArrayList<>();
@@ -208,11 +214,14 @@ public class Courier {
      * @param brokers
      * @param myPacks
      */
-    public void sendStacks(List<Broker> brokers, Warehouse myPacks) {
+    public void sendStacks(List<Broker> brokers, Warehouse myPacks, CourierWorld world) {
         if (myPacks.hasStack()) {
             Broker bestBroker = null;
             double bestQuote = -1;
 
+            int brokerIndex = 0;
+            int curIndex = 0;
+            
             // for each of the brokers get a quote
             for (Broker b : brokers) {
                 double quote = b.getQuote(myPacks);
@@ -224,11 +233,14 @@ public class Courier {
                 } else if (bestQuote > policy * quote * (1 - succRate) + (1 - policy) * quote) {
                     bestQuote = policy * quote * (1 - succRate) + (1 - policy) * quote;
                     bestBroker = b;
+                    brokerIndex = curIndex;
                 }
+                curIndex++;
             }
 
             // give the broker his fee and the packages
             if (bestBroker != null) {
+                chosenBroker = brokerIndex;
                 bestBroker.addPackage(myPacks, bestQuote / (1.0 - policy + policy * (1 - bestBroker.getDefaultRate())));
                 // i have to reset myPackages I have given them to the broker
                 myPacks.clear();
@@ -241,8 +253,8 @@ public class Courier {
      *
      * @param brokers
      */
-    public void sendPackageToBroker(List<Broker> brokers) {
-        sendStacks(brokers, myPackages);
+    public void sendPackageToBroker(List<Broker> brokers, CourierWorld world) {
+        sendStacks(brokers, myPackages, world);
     }
 
     /**
@@ -342,7 +354,7 @@ public class Courier {
 
             if (finalGlobDest != null) {
                 // send to the best broker at the destination hub
-                sendStacks(finalGlobDest.getHub().brokers, wh);
+                sendStacks(finalGlobDest.getHub().brokers, wh, world);
                 // must remove from myPackages since delivered
                 iter.remove();
 

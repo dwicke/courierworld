@@ -29,6 +29,14 @@ public abstract class Broker{
     public double getProfit() {
         return profit;
     }
+
+    public double getBidRate() {
+        return bidRate;
+    }
+
+    public double getServiceRate() {
+        return serviceRate;
+    }
     
     
     

@@ -55,13 +55,18 @@ public class Node{
         return user;
     }
 
+    public List<Courier> getCouriers() {
+        return couriers;
+    }
+    
+
     public boolean isHub() {
         return isHub; //To change body of generated methods, choose Tools | Templates.
     }
 
     void userToCourier(CourierWorld world)
     {
-        user.givePackage(couriers, world);
+        user.givePackage(couriers, world, this);
     }
 
     
