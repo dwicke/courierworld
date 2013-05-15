@@ -5,6 +5,7 @@
 package sim.courierworld;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map.Entry;
 import sim.broker.Broker;
@@ -35,9 +36,10 @@ public class Hub {
         return brokers;
     }
 
-    
-    
-    
+    public List<Courier> getLocalCouriers() {
+        return localCouriers;
+    }
+
     Hub(CourierWorld state) {
         this.state = state;
     }
@@ -119,12 +121,19 @@ public class Hub {
                     // add random number of couriers to the userNode
                     int numCouriers = state.random.nextInt(state.maxNumCouriersPerNode - state.minNumCouriersPerNode) + state.minNumCouriersPerNode;
                     // shuffle the couriers indices
-                    for (int j = 0; j < state.maxNumCouriersPerHub; j++) {
-                        int shuffle = state.random.nextInt(state.maxNumCouriersPerHub - j) + j;
-                        cours[j] = cours[shuffle];
+                   
+
+                    for (int j = cours.length - 1; j >= 0; j--) {
+                        int index = state.random.nextInt(j+1);
+                        // swap
+                        int a = cours[index];
+                        cours[index] = cours[j];
+                        cours[j] = a;
                     }
+                    
 
                     for (int j = 0; j < numCouriers; j++) {
+
                         userNode.addCourier(localCouriers.get(cours[j]));
                         localCouriers.get(cours[j]).addSource(userNode);
                     }

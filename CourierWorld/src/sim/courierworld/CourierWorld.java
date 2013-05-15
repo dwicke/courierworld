@@ -49,23 +49,17 @@ public class CourierWorld extends SimState implements Steppable {
     public List<Node> hubNodes;
     //public PackageGenerator pGen;
     //public double decayRate;
-
     public SparseGrid2D grid = new SparseGrid2D(gridSize, gridSize);
     public int minNumCouriersPerNode = 2;
     public List<Courier> globalCourierList;
     double randGivePack = 0.8;// chance that courier will decide to give a courier a package while a courier is delivering packages
     public Network logisticNetwork = new Network(false);// undirecterd graph
     public Edge[][] adgList;
-    
-    
 
-    
-    
-    
     @Override
     public void step(SimState state) {
 
-        
+
         System.err.println("Timestep: " + state.schedule.getSteps());
         //user to local courier
         for (int i = 0; i < grid.allObjects.numObjs; i++) {
@@ -211,27 +205,27 @@ public class CourierWorld extends SimState implements Steppable {
             Node nodei = (Node) grid.allObjects.objs[i];
             for (int j = i + 1; j < grid.allObjects.numObjs; j++) {
                 Node nodej = (Node) grid.allObjects.objs[j];
-                if(!nodei.isHub() && !nodej.isHub()){
-                    if(nodei.getUser().getHub().hashCode() == nodej.getUser().getHub().hashCode())
-                     logisticNetwork.addEdge(nodei, nodej, new Throughput("LC"));
-                }
-                else if(nodei.isHub() && nodej.isHub()){
+                if (!nodei.isHub() && !nodej.isHub()) {
+                    if (nodei.getUser().getHub().hashCode() == nodej.getUser().getHub().hashCode()) {
+                        logisticNetwork.addEdge(nodei, nodej, new Throughput("LC"));
+                    }
+
+                } else if (nodei.isHub() && nodej.isHub()) {
                     logisticNetwork.addEdge(nodei, nodej, new Throughput("GC"));
-                }
-                else if (nodei.isHub() && !nodej.isHub())
-                {
-                    if(nodei.getHub().localNodes.contains(nodej))
+                } else if (nodei.isHub() && !nodej.isHub()) {
+                    if (nodei.getHub().localNodes.contains(nodej)) {
                         logisticNetwork.addEdge(nodei, nodej, new Throughput("LGC"));
+                    }
                 }
-               
+
             }
 
         }
-        
+
         adgList = logisticNetwork.getAdjacencyMatrix();
-        
-        
-        
+
+
+
         schedule.scheduleRepeating(this);
 
     }
@@ -408,10 +402,4 @@ public class CourierWorld extends SimState implements Steppable {
     public void setRandGivePack(double randGivePack) {
         this.randGivePack = randGivePack;
     }
-    
-    
-    
-    
-    
-    
 }

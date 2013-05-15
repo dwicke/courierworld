@@ -33,6 +33,12 @@ public class Courier {
     {
         return chosenBroker;
     }
+
+    public double getProfit() {
+        return profit;
+    }
+    
+    
     
     public Courier(boolean isGlobal) {
         myNetwork = new HashMap<>();

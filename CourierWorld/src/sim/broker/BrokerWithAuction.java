@@ -160,7 +160,7 @@ public class BrokerWithAuction extends Broker {
             int currentActionServiceRate = (int) Math.floor(numActions * serviceRate / (maxServiceRate - minServiceRate));
             int currentActionBidRate = (int) Math.floor(numActions * bidRate / (maxBidRate - minBidRate));
             Q1.get(prevState).set(currentActionServiceRate, learningRate * Q1.get(prevState).get(currentActionServiceRate) + (1 - learningRate) * (reward1 + gamma * Q1.get(state).get(currentActionServiceRate)));
-            Q2.get(prevState).set(currentActionBidRate, learningRate * Q1.get(prevState).get(currentActionBidRate) + (1 - learningRate) * (reward1 + gamma * Q1.get(state).get(currentActionBidRate)));
+            Q2.get(prevState).set(currentActionBidRate, learningRate * Q2.get(prevState).get(currentActionBidRate) + (1 - learningRate) * (reward2 + gamma * Q2.get(state).get(currentActionBidRate)));
 
             //update policy
             int bidActionIdx = 0;
