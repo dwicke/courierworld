@@ -105,7 +105,7 @@ public class User {
             if (bestCourier != null) {
                 // add the number of packages to the network edge throughput
                 ((Throughput)world.adgList[world.logisticNetwork.getNodeIndex(hub)][world.logisticNetwork.getNodeIndex(from)].info).addStacks(allPackages.getTotalNumPacks(), world.schedule.getSteps());
-                System.err.println(world.logisticNetwork.getNodeIndex(hub) + "  " + world.logisticNetwork.getNodeIndex(from) + "  " + ((Throughput)world.adgList[world.logisticNetwork.getNodeIndex(hub)][world.logisticNetwork.getNodeIndex(from)].info).getThroughput());
+                //System.err.println(world.logisticNetwork.getNodeIndex(hub) + "  " + world.logisticNetwork.getNodeIndex(from) + "  " + ((Throughput)world.adgList[world.logisticNetwork.getNodeIndex(hub)][world.logisticNetwork.getNodeIndex(from)].info).getThroughput());
                 bestCourier.recievePackage(allPackages.getPackage(), bestQuote / (1.0 - policy + policy * (1 - bestCourier.getSuccessRate())));
             }
         }

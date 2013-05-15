@@ -60,7 +60,8 @@ public class BrokerWithAuction extends Broker {
 
     @Override
     public double getQuote(Warehouse myPackages) {
-        return myPackages.getTotalNumPacks() * serviceRate;
+        quote = myPackages.getTotalNumPacks() * serviceRate;
+        return quote;
     }
 
     @Override

@@ -22,6 +22,7 @@ public abstract class Broker{
     public double profit = 0.0;
     double bidRate = 0.1;
     public  double serviceRate = 0.5;
+    public double quote = 0;
     public Warehouse myPackages = new Warehouse();
     public Warehouse lostPackages = new Warehouse();
     public Warehouse succPakcages = new Warehouse();
@@ -39,7 +40,10 @@ public abstract class Broker{
     }
     
     
-    
+    public double getQuote()
+    {
+        return quote;
+    }
     // the quote for all of the packages in the warehouse
     public abstract double getQuote(Warehouse myPackages);
 

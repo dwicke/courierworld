@@ -60,7 +60,7 @@ public class CourierWorld extends SimState implements Steppable {
     public void step(SimState state) {
 
 
-        System.err.println("Timestep: " + state.schedule.getSteps());
+       // System.err.println("Timestep: " + state.schedule.getSteps());
         //user to local courier
         for (int i = 0; i < grid.allObjects.numObjs; i++) {
             Node node = (Node) grid.allObjects.objs[i];
