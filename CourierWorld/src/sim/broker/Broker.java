@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map.Entry;
 import sim.courier.Courier;
 import sim.courierworld.CourierWorld;
+import sim.courierworld.Hub;
 import sim.courierworld.Node;
 import sim.courierworld.Warehouse;
 
@@ -20,13 +21,19 @@ public abstract class Broker{
 
     public double defaultRate = 0.0;
     public double profit = 0.0;
-    double bidRate = 0.1;
-    public  double serviceRate = 0.5;
+    double bidRate = 0.5;
+    public  double serviceRate = 0.1;
     public double quote = 0;
     public Warehouse myPackages = new Warehouse();
     public Warehouse lostPackages = new Warehouse();
     public Warehouse succPakcages = new Warehouse();
+    public Hub myHub;
 
+    public Broker(Hub myHub) {
+        this.myHub = myHub;
+    }
+
+    
     public double getProfit() {
         return profit;
     }
@@ -38,6 +45,7 @@ public abstract class Broker{
     public double getServiceRate() {
         return serviceRate;
     }
+    
     
     
     public double getQuote()
@@ -92,20 +100,18 @@ public abstract class Broker{
     public void addPackage(Warehouse myPackages, double fee)
     {
         this.myPackages.addAll(myPackages);
+        //System.err.println("---" + fee);
         profit += fee;
     }
 
     public abstract void performAuctions(List<Courier> courierList,  CourierWorld world, Node hubNode);
 
     public void decayPackages() {
-        myPackages.decayStacks(lostPackages);
+        
+        profit -= myPackages.decayStacks(lostPackages)*serviceRate;
         
         
     }
-
-    public abstract void updateServiceRate();
-    
-    
 
     
 }

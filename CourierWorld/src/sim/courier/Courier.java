@@ -25,7 +25,7 @@ public class Courier {
     // map the edges to costs
     private HashMap<NodeKey, Double> myNetwork;
     private List<Node> sourceNode;
-    private double policy;
+    private double policy = 0.7; //proportion of choosing broker based on success rate
     private Broker userBroker; // the broker i used to give user a quote and used to give success rate.
     private int chosenBroker;
     
@@ -133,12 +133,12 @@ public class Courier {
     public int getSomeStacks(Map.Entry<Warehouse.Key, Integer> stack, double rate, Node hubNode, CourierWorld world) {
 
         if (isGlobal == false && myNetwork.containsKey(new NodeKey(hubNode, stack.getKey().dest))) {
-            return (int) (stack.getValue() * Math.random());
+            return (int) (stack.getValue() * (0.1 + 0.1*world.random.nextDouble())* myNetwork.get(new NodeKey(hubNode, stack.getKey().dest)));
         } else if (isGlobal == true && hubNode != getDestinationGlobalHub(stack, world)) {
             // don't want to buy it if already at the right global hub
             //System.err.println(hubNode + "  " + getDestinationGlobalHub(stack, world));
 
-            return (int) (stack.getValue() * Math.random());
+            return (int) (stack.getValue() *  (0.1 + 0.1*world.random.nextDouble())* myNetwork.get(new NodeKey(hubNode, getDestinationGlobalHub(stack, world))));
         }
         return 0;
     }
@@ -188,6 +188,8 @@ public class Courier {
         for (Broker b : brokers) {
             double quote = b.getQuote(h);
             double succRate = b.getDefaultRate();
+            
+            //System.err.println(b.toString()  + " " + quote);
 
             if (bestQuote == -1) {
                 bestQuote = policy * quote * (1 - succRate) + (1 - policy) * quote;
@@ -197,6 +199,8 @@ public class Courier {
                 userBroker = b;
             }
         }
+        
+        //System.err.println("---");
         return bestQuote;
     }
 
@@ -225,7 +229,7 @@ public class Courier {
             Broker bestBroker = null;
             double bestQuote = -1;
 
-            int brokerIndex = 0;
+            int brokerIndex = world.random.nextInt(brokers.size());
             int curIndex = 0;
             
             // for each of the brokers get a quote
@@ -243,11 +247,16 @@ public class Courier {
                 }
                 curIndex++;
             }
-
+            //may choose brokers randomly
+            if(world.random.nextDouble() < 0.2){
+                brokerIndex = world.random.nextInt(brokers.size());
+                bestBroker = brokers.get(brokerIndex);
+            }
             // give the broker his fee and the packages
             if (bestBroker != null) {
                 chosenBroker = brokerIndex;
                 bestBroker.addPackage(myPacks, bestQuote / (1.0 - policy + policy * (1 - bestBroker.getDefaultRate())));
+                System.out.println("packs = " + myPacks.getTotalNumPacks());
                 // i have to reset myPackages I have given them to the broker
                 myPacks.clear();
             }
@@ -305,7 +314,7 @@ public class Courier {
 
 
 
-        return best;
+        return best  ;
     }
 
     public Node getDestinationGlobalHub(Entry<Warehouse.Key, Integer> destination, CourierWorld world) {
@@ -430,6 +439,7 @@ public class Courier {
 
         for (Entry<Warehouse.Key, Integer> wh : collectedWarehouse) {
             myPackages.updateStack(wh.getKey(), wh.getValue());
+            profit += getBrokerQuote(wh, globalNode.getHub().getBrokers());
         }
 
 

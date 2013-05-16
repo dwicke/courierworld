@@ -49,8 +49,8 @@ public class Hub {
         int randx = 0, randy = 0;
 
         brokers = new ArrayList<>();
-        brokers.add(new BrokerWithAuction());
-        brokers.add(new BrokerWithoutAuction());
+        brokers.add(new BrokerWithAuction(this));
+        brokers.add(new BrokerWithoutAuction(this));
 
         localCouriers = new ArrayList<>();
         for (int i = 0; i < state.maxNumCouriersPerHub; i++) {
@@ -140,6 +140,7 @@ public class Hub {
 
                 } else {
                     // add the couriers to the node
+                    //System.err.print(state.maxNumCouriersPerNode - state.minNumCouriersPerNode);
                     int numCouriers = state.random.nextInt(state.maxNumCouriersPerNode - state.minNumCouriersPerNode) + state.minNumCouriersPerNode;
                     int j;
                     for (j = 0; j < numCouriers; j++) {

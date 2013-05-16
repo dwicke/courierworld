@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import sim.courier.Courier;
 import sim.courierworld.CourierWorld;
+import sim.courierworld.Hub;
 import sim.courierworld.Node;
 import sim.courierworld.Warehouse;
 
@@ -23,7 +24,8 @@ import sim.courierworld.Warehouse;
  */
 public class BrokerWithAuction extends Broker {
 
-    public double explorationFactor = 0.1;
+    public double explorationFactor = 0.5;
+    public double explorationFactor0 = 0.5;
     public double interactionRate = 0.2;
     public int prevState = 0;
     public int numActions = 5;
@@ -38,13 +40,19 @@ public class BrokerWithAuction extends Broker {
     public ArrayList<Double> PI1 = new ArrayList<>();
     public ArrayList<Double> PI2 = new ArrayList<>();
     public int numStates = 5;
-    public double learningRate = 0.5;
+    public double learningRate = 0.2;
     public double minBidRate = 0.1;
     public double maxBidRate = 2.0;
     public double minServiceRate = 0.1;
     public double maxServiceRate = 2.0;
+    public int state;
 
-    public BrokerWithAuction() {
+    /**
+     *
+     * @param myHub
+     */
+    public BrokerWithAuction(Hub myHub) {
+        super(myHub);
 
         for (int i = 0; i < numStates; i++) {
             Q1.add(new ArrayList<Double>());
@@ -56,20 +64,34 @@ public class BrokerWithAuction extends Broker {
                 Q2.get(i).add(0.0);
             }
         }
+        state = 1;
     }
+
+    @Override
+    public String toString() {
+        return "WithAuction"; //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    
 
     @Override
     public double getQuote(Warehouse myPackages) {
         quote = myPackages.getTotalNumPacks() * serviceRate;
+        //System.err.println("+q" + quote);
         return quote;
     }
 
-    @Override
-    public void updateServiceRate() {
+    public void updateRates() {
         serviceRate = PI1.get(getState());
+        bidRate = PI2.get(getState());
         if(Math.random() < explorationFactor) {
-            serviceRate = PI2.get((int)(Math.floor(Math.random()*numStates)));
+            serviceRate = Math.max(maxServiceRate, Math.min(minServiceRate, PI1.get((int)(Math.floor(Math.random()*numStates)))));
+            bidRate = Math.max(minBidRate, Math.min(maxBidRate, PI2.get((int)(Math.floor(Math.random()*numStates)))));
         }
+        explorationFactor = explorationFactor0*Math.exp(-Math.log(myHub.state.schedule.getSteps())/20.0);
+        
+        System.err.println("+b " + bidRate + "," + "+s " + serviceRate + " " + explorationFactor);
+        
     }
     
     
@@ -127,6 +149,9 @@ public class BrokerWithAuction extends Broker {
         }
 
         currentPacksPerStep = 0;//should be reset to 0 after each round of auction
+        updatePolicy(world);
+        updateRates();
+        System.err.println("+p" + profit);
     }
 
     @Override
@@ -136,12 +161,21 @@ public class BrokerWithAuction extends Broker {
     }
 
     public int getState() {
-        return (int) Math.floor(defaultRate * numStates);
+        double sum = 0.0;
+        for(Broker b:myHub.brokers){
+            sum += b.profit;
+        }
+        //return (int) Math.floor((defaultRate) * numStates);
+        if(sum > 0.0)
+            return (int) Math.floor((Math.max(0, profit) / sum) * (numStates - 1));
+        else 
+            return numStates / 2;
     }
 
     public void updatePolicy(CourierWorld world) {
+        System.err.println("currentSate : " + getState());
         if (world.schedule.getSteps() > 1) {
-            int state = getState();
+            
 
             //compute the joint reward based on both the rates
             double reward1 = 0, reward2 = 0;
@@ -152,14 +186,17 @@ public class BrokerWithAuction extends Broker {
                 reward1 = -1.0 + currentPacksPerStep / (1.0 + currentAuctionedPacksPerStep);
             }
 
+            
             reward2 = 1.0 - currentDecayedPacks / (1.0 + currentAuctionedPacksPerStep);
             double rewardc1 = (1.0 - interactionRate)*reward1 + interactionRate*reward2;
             double rewardc2 = (1.0 - interactionRate)*reward2 + interactionRate*reward1;
-            reward1 = rewardc1;
-            reward2 = rewardc2;
+            reward1 = rewardc1 * (1.5 - getState()/(double)numStates);
+            reward2 = rewardc2 * (1.5 - getState()/(double)numStates);;
 
-            int currentActionServiceRate = (int) Math.floor(numActions * serviceRate / (maxServiceRate - minServiceRate));
-            int currentActionBidRate = (int) Math.floor(numActions * bidRate / (maxBidRate - minBidRate));
+            int currentActionServiceRate = (int) Math.floor((numActions - 1) * (serviceRate - minServiceRate) / (maxServiceRate - minServiceRate));
+            int currentActionBidRate = (int) Math.floor((numActions  - 1)* (bidRate - minBidRate) / (maxBidRate - minBidRate));
+            
+            //System.err.println(serviceRate +" "+ (serviceRate - minServiceRate)/(maxServiceRate - minServiceRate) + " " + numActions * (serviceRate - minServiceRate) / (maxServiceRate - minServiceRate));
             Q1.get(prevState).set(currentActionServiceRate, learningRate * Q1.get(prevState).get(currentActionServiceRate) + (1 - learningRate) * (reward1 + gamma * Q1.get(state).get(currentActionServiceRate)));
             Q2.get(prevState).set(currentActionBidRate, learningRate * Q2.get(prevState).get(currentActionBidRate) + (1 - learningRate) * (reward2 + gamma * Q2.get(state).get(currentActionBidRate)));
 
@@ -184,10 +221,13 @@ public class BrokerWithAuction extends Broker {
             
 
             //update the bid and service rates for the previous state
-            PI1.set(prevState, (maxServiceRate - minServiceRate) * serviceActionIdx / numActions);
-            PI2.set(prevState, (maxBidRate - minBidRate) * bidActionIdx / numActions);
+            PI1.set(prevState, Math.max(minServiceRate, Math.min(maxServiceRate, (maxServiceRate - minServiceRate) * serviceActionIdx / numActions)));
+            PI2.set(prevState, Math.max(minBidRate,Math.min(maxBidRate, (maxBidRate - minBidRate) * bidActionIdx / numActions)));
 
             prevState = state;
+            
+            state = getState();
+            System.err.println("+d" +  defaultRate);
         }
     }
 

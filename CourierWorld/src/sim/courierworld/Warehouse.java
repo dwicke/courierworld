@@ -27,9 +27,9 @@ public class Warehouse {
     public enum Priority
     {
 
-        IMPORTANT(0.7),
-        EXPRESS(0.6),
-        NORMAL(0.5);
+        IMPORTANT(0.8),
+        EXPRESS(0.4),
+        NORMAL(0.2);
         double decayRate;
 
         Priority(double decayRate)
@@ -100,14 +100,16 @@ public class Warehouse {
     /**
      * Decays all of the packages in this.
      */
-    public void decayStacks(Warehouse lostPackages)
+    public int decayStacks(Warehouse lostPackages)
     {
+        int decayed  = 0 ;
         for(Entry<Key, Integer> ent : mapping.entrySet())
         {
-            int decayed = ent.getValue() - (int)(ent.getValue() * ent.getKey().priority.decayRate);
+            decayed = ent.getValue() - (int)(ent.getValue() * ent.getKey().priority.decayRate);
             ent.setValue((int) (ent.getValue() * ent.getKey().priority.decayRate));
             lostPackages.updateStack(ent.getKey(), decayed);
         }
+        return decayed;
     }
     
     /**

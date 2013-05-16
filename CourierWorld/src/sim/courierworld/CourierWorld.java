@@ -32,16 +32,16 @@ public class CourierWorld extends SimState implements Steppable {
     public int numberNodes = 100;      // number of communities other than hubs
     public int numSmallCouriers = 200; // number of couriers that can transport packages cost effectively between nonhubs
     public int numGlobalCouriers = 10; // number of couriers that can transport packages cost effectively between hubs and 
-    public int numHubs = 5;            // number of hubs in the network
+    public int numHubs = 3;            // number of hubs in the network
     public int distFromHubs = 100; // minimum distance between hubs
-    public int numLocalNode = 20;
+    public int numLocalNode = 8;
     public int numMaxGlobCourierPerHub = 4;
     public int numMinGlobCourierPerHub = 2;
     public int numMaxPkgs = 100;
     public int localCliqueSize = 50; //radius of the cliques
     public int hubNhbrSize = 20;
     public int maxNumCouriersPerHub = 10;//maxNumCouriersPerHub < minNumCouriersPerNode*numLocalNode
-    public int maxNumCouriersPerNode = 5;
+    public int maxNumCouriersPerNode = 4;
     public double maxWeight = 1;
     public double minWeight = 0;
     public double minViableWeight = 0.2;
@@ -74,7 +74,7 @@ public class CourierWorld extends SimState implements Steppable {
         // local courier to broker
         for (Node hubnode : hubNodes) {
             for (Broker brok : hubnode.getHub().brokers) {
-                brok.updateServiceRate();
+                //brok.updateServiceRate();
             }
             for (Courier cour : hubnode.getHub().localCouriers) {
                 cour.sendPackageToBroker(hubnode.getHub().brokers, this);
@@ -120,6 +120,8 @@ public class CourierWorld extends SimState implements Steppable {
                 cour.deliverStacks(hubnode, this);
             }
         }
+        
+        System.err.println("------------------------------");
 
     }
 
