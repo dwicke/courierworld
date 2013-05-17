@@ -256,7 +256,7 @@ public class Courier {
             if (bestBroker != null) {
                 chosenBroker = brokerIndex;
                 bestBroker.addPackage(myPacks, bestQuote / (1.0 - policy + policy * (1 - bestBroker.getDefaultRate())));
-                System.out.println("packs = " + myPacks.getTotalNumPacks());
+                //System.out.println("packs = " + myPacks.getTotalNumPacks());
                 // i have to reset myPackages I have given them to the broker
                 myPacks.clear();
             }

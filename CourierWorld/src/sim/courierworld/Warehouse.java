@@ -27,9 +27,9 @@ public class Warehouse {
     public enum Priority
     {
 
-        IMPORTANT(0.8),
-        EXPRESS(0.4),
-        NORMAL(0.2);
+        IMPORTANT(0.9),
+        EXPRESS(0.8),
+        NORMAL(0.7);
         double decayRate;
 
         Priority(double decayRate)

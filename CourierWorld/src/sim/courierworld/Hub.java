@@ -11,6 +11,7 @@ import java.util.Map.Entry;
 import sim.broker.Broker;
 import sim.broker.BrokerWithAuction;
 import sim.broker.BrokerWithoutAuction;
+import sim.broker.BrokerWithoutAuctionU;
 import sim.courier.Courier;
 import sim.field.grid.Grid2D;
 import sim.field.grid.SparseGrid2D;
@@ -31,6 +32,7 @@ public class Hub {
     public List<Broker> brokers; // the local brokers for this hub
     public List<Node> localNodes; // local nodes that branch out from this hub
     public Node myNode;
+    public ArrayList<Double> profitShare = new ArrayList<>();
 
     public List<Broker> getBrokers() {
         return brokers;
@@ -40,6 +42,11 @@ public class Hub {
         return localCouriers;
     }
 
+    public ArrayList<Double> getProfitShare() {
+        return profitShare;
+    }
+
+    
     Hub(CourierWorld state) {
         this.state = state;
     }
@@ -50,11 +57,16 @@ public class Hub {
 
         brokers = new ArrayList<>();
         brokers.add(new BrokerWithAuction(this));
+        brokers.add(new BrokerWithAuction(this));
         brokers.add(new BrokerWithoutAuction(this));
+        brokers.add(new BrokerWithoutAuctionU(this));
 
         localCouriers = new ArrayList<>();
         for (int i = 0; i < state.maxNumCouriersPerHub; i++) {
             localCouriers.add(new Courier(false));
+        }
+        for(int i = 0; i < brokers.size(); i++){
+            profitShare.add(1.0/brokers.size());
         }
 
 

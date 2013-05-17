@@ -55,6 +55,8 @@ public class CourierWorld extends SimState implements Steppable {
     double randGivePack = 0.8;// chance that courier will decide to give a courier a package while a courier is delivering packages
     public Network logisticNetwork = new Network(false);// undirecterd graph
     public Edge[][] adgList;
+    
+    
 
     @Override
     public void step(SimState state) {
@@ -118,6 +120,15 @@ public class CourierWorld extends SimState implements Steppable {
                 // x number of local nodes and ask for user for
                 // stacks before delivering the stacks to the dest.
                 cour.deliverStacks(hubnode, this);
+            }
+            
+            double sum = 0.0;
+            for (int i = 0; i < hubnode.getHub().brokers.size(); i++)
+            {
+                sum += hubnode.getHub().brokers.get(i).profit;
+            }
+            for (int i = 0; i < hubnode.getHub().brokers.size(); i++){
+                hubnode.getHub().profitShare.set(i, hubnode.getHub().brokers.get(i).profit/sum);
             }
         }
         

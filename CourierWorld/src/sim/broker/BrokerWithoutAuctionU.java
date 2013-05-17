@@ -22,13 +22,13 @@ import sim.courierworld.Warehouse;
  *
  * @author drew
  */
-public class BrokerWithoutAuction extends Broker {
+public class BrokerWithoutAuctionU extends Broker {
     public double baseRate = 1.0;//selling without profit
     public double  minBaseRate = 0.5;
     public double  maxBaseRate = 10.0;
     public double  profitFactor = 1.5;
 
-    public BrokerWithoutAuction(Hub myHub) {
+    public BrokerWithoutAuctionU(Hub myHub) {
         super(myHub);
     }
     
@@ -102,8 +102,8 @@ public class BrokerWithoutAuction extends Broker {
        }
        
        
-       bidRate =  compBidRate / (myHub.brokers.size()-1) - 0.1 * Math.random() ;
-       serviceRate = compServRate / (myHub.brokers.size()-1) + 0.1* Math.random();
+       bidRate =  compBidRate / (myHub.brokers.size()-1) + 0.1 * Math.random() ;
+       serviceRate = compServRate / (myHub.brokers.size()-1) - 0.1* Math.random();
      }
 
  
