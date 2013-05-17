@@ -69,7 +69,7 @@ public class BrokerWithAuction extends Broker {
 
     @Override
     public String toString() {
-        return "WithAuction"; //To change body of generated methods, choose Tools | Templates.
+        return "WithAuction";
     }
 
     @Override
