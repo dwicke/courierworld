@@ -7,7 +7,7 @@ package sim.courierworld.model;
 import sim.engine.Steppable;
 
 /**
- * Decides which broker delivers the unit
+ * Decides which broker delivers the unit and sets it to the winning broker
  * @author drew
  */
 public interface IArbiter extends Steppable{

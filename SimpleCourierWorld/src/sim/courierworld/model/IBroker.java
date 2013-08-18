@@ -28,4 +28,11 @@ public interface IBroker {
      */
     public void setDeliveryRate(SimpleCourierWorld state);
     
+    public void setID(int id);
+    public int getID();
+    public int getDeliveryRate();
+    public int getQuote();
+    public void setDeliveryRate(int deliveryRate);
+    public void setQuote(int quote);
+    
 }

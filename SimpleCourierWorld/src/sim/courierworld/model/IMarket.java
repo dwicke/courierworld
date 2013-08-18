@@ -5,6 +5,7 @@
 package sim.courierworld.model;
 
 import sim.courierworld.SimpleCourierWorld;
+import sim.engine.Steppable;
 
 /**
  * This class represents the market
@@ -14,7 +15,7 @@ import sim.courierworld.SimpleCourierWorld;
  * must pay to get the unit delivered.
  * @author drew
  */
-public interface IMarket {
+public interface IMarket extends Steppable{
     
     /**
      * This method sets the value of the unit stored in the world.

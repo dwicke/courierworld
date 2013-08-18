@@ -4,9 +4,18 @@
  */
 package sim.courierworld;
 
+import java.util.Collection;
 import sim.courierworld.model.IArbiter;
+import sim.courierworld.model.IBroker;
 import sim.courierworld.model.IMarket;
-import sim.courierworld.model.Unit;
+import sim.courierworld.model.impl.Arbiter;
+import sim.courierworld.model.impl.Broker;
+import sim.courierworld.model.impl.Market;
+import sim.courierworld.model.impl.RandomBroker;
+import sim.courierworld.model.impl.Unit;
+import sim.engine.ParallelSequence;
+import sim.engine.RandomSequence;
+import sim.engine.Sequence;
 import sim.engine.SimState;
 import static sim.engine.SimState.doLoop;
 import sim.engine.Steppable;
@@ -18,12 +27,72 @@ import sim.util.Bag;
  */
 public class SimpleCourierWorld extends SimState implements Steppable {
 
+    /**
+     * the number of brokers that will ever exist.
+     */
+    private int numbrokers;
     
-    
-    private Bag brokers;
-    private IArbiter arbiter;
-    private IMarket market;
+    /**
+     * The brokers that set the price that they will accept the unit at
+     * and pay to market to see that it is delivered.
+     */
+    private Bag brokers = new Bag();
+    /**
+     * The arbiter that decides which broker to pay to deliver the package
+     */
+    private IArbiter arbiter = new Arbiter();
+    /**
+     * the market that decides the min price to deliver a particular unit
+     */
+    private IMarket market = new Market();
+    /**
+     * the package to deliver
+     */
     private Unit unit;
+    /**
+     * the broker that the arbiter has chosen
+     */
+    private IBroker unitBroker;
+
+    public int getNumbrokers() {
+        return numbrokers;
+    }
+
+    public void setNumbrokers(int numbrokers) {
+        this.numbrokers = numbrokers;
+    }
+
+    public Bag getBrokers() {
+        return brokers;
+    }
+
+    public void setBrokers(Bag brokers) {
+        this.brokers = brokers;
+    }
+
+    public IArbiter getArbiter() {
+        return arbiter;
+    }
+
+    public void setArbiter(IArbiter arbiter) {
+        this.arbiter = arbiter;
+    }
+
+    public IMarket getMarket() {
+        return market;
+    }
+
+    public void setMarket(IMarket market) {
+        this.market = market;
+    }
+
+    public IBroker getUnitBroker() {
+        return unitBroker;
+    }
+
+    public void setUnitBroker(IBroker unitBroker) {
+        this.unitBroker = unitBroker;
+    }
     
     public Unit getUnit() {
         return unit;
@@ -47,9 +116,10 @@ public class SimpleCourierWorld extends SimState implements Steppable {
 
     @Override
     public void step(SimState state) {
-        
+        System.err.println("Creating a Unit");
         // create a unit
-        setUnit(new Unit());
+        if (getUnit() == null)
+            setUnit(new Unit());
         
         
     }
@@ -57,16 +127,55 @@ public class SimpleCourierWorld extends SimState implements Steppable {
     @Override
     public void start() {
         super.start();
-        
+        numbrokers = 3;
+        System.out.println("Starting...\n" + numbrokers + " brokers");
         // create the brokers
+        for (int i = 0; i < numbrokers; i++) {
+            IBroker b = new RandomBroker();
+            b.setID(i);
+            brokers.add(b);
+        }
         
         
-        // set up the schedule
+        // set up the sequence of steppable
         // first step this to create the unit
+        Collection steps = new Bag();
+        // create the unit
+        steps.add(this);
         
+        Collection parallelSteps = new Bag();
         // step the brokers to set their quotes for this unit
-        // call the arbiter
-        // 
+        for (int i = 0; i < numbrokers; i++)
+        {
+            final IBroker broker = (IBroker) brokers.objs[i];
+            // schedule the brokers to set their quotes for taking the packages
+            parallelSteps.add(new Steppable() {
+
+                @Override
+                public void step(SimState state) {
+                    broker.setQuote((SimpleCourierWorld)state);
+                }
+            });
+            
+        }
+        steps.add(new RandomSequence(parallelSteps));
         
+        // call the arbiter that sets the unit broker
+        steps.add(new Arbiter());
+        // call the setDeliveryRate on the unit broker
+        steps.add(new Steppable() {
+
+            @Override
+            public void step(SimState state) {
+               ((SimpleCourierWorld)state).unitBroker.setDeliveryRate((SimpleCourierWorld)state);
+            }
+        });
+        
+        // call the market
+        steps.add(new Market());
+        // set the schedule
+        schedule.scheduleOnce(new Sequence(steps));
+        
+        //schedule.scheduleOnce(new Arbiter());
     }
 }
