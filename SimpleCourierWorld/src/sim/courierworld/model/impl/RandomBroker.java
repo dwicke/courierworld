@@ -20,7 +20,7 @@ public class RandomBroker extends Broker{
 
     @Override
     public void setDeliveryRate(SimpleCourierWorld state) {
-        setDeliveryRate(state.random.nextInt(getQuote()));
+        setDeliveryRate(state.random.nextInt(getQuote() + 1));
         super.setQuote(state);
     }
 }

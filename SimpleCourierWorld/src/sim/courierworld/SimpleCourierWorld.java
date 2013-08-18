@@ -4,13 +4,18 @@
  */
 package sim.courierworld;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import sim.courierworld.model.IArbiter;
 import sim.courierworld.model.IBroker;
 import sim.courierworld.model.IMarket;
 import sim.courierworld.model.impl.Arbiter;
 import sim.courierworld.model.impl.Broker;
 import sim.courierworld.model.impl.Market;
+import sim.courierworld.model.impl.MyRandomSequence;
+import sim.courierworld.model.impl.MySequence;
 import sim.courierworld.model.impl.RandomBroker;
 import sim.courierworld.model.impl.Unit;
 import sim.engine.ParallelSequence;
@@ -139,11 +144,11 @@ public class SimpleCourierWorld extends SimState implements Steppable {
         
         // set up the sequence of steppable
         // first step this to create the unit
-        Collection steps = new Bag();
+        List steps = new ArrayList();
         // create the unit
         steps.add(this);
         
-        Collection parallelSteps = new Bag();
+        List parallelSteps = new ArrayList();
         // step the brokers to set their quotes for this unit
         for (int i = 0; i < numbrokers; i++)
         {
@@ -158,7 +163,7 @@ public class SimpleCourierWorld extends SimState implements Steppable {
             });
             
         }
-        steps.add(new RandomSequence(parallelSteps));
+        steps.add(new MyRandomSequence(parallelSteps));
         
         // call the arbiter that sets the unit broker
         steps.add(new Arbiter());
@@ -174,8 +179,6 @@ public class SimpleCourierWorld extends SimState implements Steppable {
         // call the market
         steps.add(new Market());
         // set the schedule
-        schedule.scheduleOnce(new Sequence(steps));
-        
-        //schedule.scheduleOnce(new Arbiter());
+        schedule.scheduleOnce(new MySequence(steps));
     }
 }
