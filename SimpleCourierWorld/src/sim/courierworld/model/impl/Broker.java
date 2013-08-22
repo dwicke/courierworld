@@ -65,6 +65,18 @@ public class Broker implements IBroker{
     public void setQuote(int quote) {
         this.quote = quote;
     }
+
+    @Override
+    public void unitSold() {
+        //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void notSold() {
+        //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
     
     
     

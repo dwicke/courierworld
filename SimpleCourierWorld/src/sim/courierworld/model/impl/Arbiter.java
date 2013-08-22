@@ -10,7 +10,7 @@ import sim.courierworld.model.IBroker;
 import sim.engine.SimState;
 
 /**
- *
+ * Simple arbiter that picks the Broker with the smallest quote
  * @author drew
  */
 public class Arbiter implements IArbiter{
@@ -18,8 +18,17 @@ public class Arbiter implements IArbiter{
     @Override
     public void step(SimState state) {
         SimpleCourierWorld scw = (SimpleCourierWorld) state;
-        scw.setUnitBroker((IBroker)scw.getBrokers().objs[0]);
-        System.out.println("In Arbiter and picked broker: " + scw.getBrokers().objs[0].toString());
+        IBroker minBroker = null;
+        for (Object cur : scw.getBrokers()) {
+            IBroker curBroker = (IBroker) cur;
+            if(minBroker == null || (minBroker != null && curBroker.getQuote() < minBroker.getQuote())) {
+                minBroker = curBroker;
+            }
+        }
+        if (minBroker != null) {
+            scw.setUnitBroker(minBroker);
+            System.out.println("In Arbiter and picked broker: " + minBroker.toString());
+        }
     }
     
 }

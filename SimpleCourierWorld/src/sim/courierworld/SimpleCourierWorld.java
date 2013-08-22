@@ -14,8 +14,8 @@ import sim.courierworld.model.IMarket;
 import sim.courierworld.model.impl.Arbiter;
 import sim.courierworld.model.impl.Broker;
 import sim.courierworld.model.impl.Market;
-import sim.courierworld.model.impl.MyRandomSequence;
-import sim.courierworld.model.impl.MySequence;
+import sim.courierworld.util.MyRandomSequence;
+import sim.courierworld.util.MySequence;
 import sim.courierworld.model.impl.RandomBroker;
 import sim.courierworld.model.impl.Unit;
 import sim.engine.ParallelSequence;
@@ -121,11 +121,12 @@ public class SimpleCourierWorld extends SimState implements Steppable {
 
     @Override
     public void step(SimState state) {
-        System.err.println("Creating a Unit");
-        // create a unit
-        if (getUnit() == null)
-            setUnit(new Unit());
         
+        // create a unit
+        if (getUnit() == null) {
+            System.err.println("Creating a Unit");
+            setUnit(new Unit());
+        }
         
     }
     

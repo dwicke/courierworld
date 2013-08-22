@@ -34,5 +34,9 @@ public interface IBroker {
     public int getQuote();
     public void setDeliveryRate(int deliveryRate);
     public void setQuote(int quote);
+
+    public void unitSold();
+
+    public void notSold();
     
 }

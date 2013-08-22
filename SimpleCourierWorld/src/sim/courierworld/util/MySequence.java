@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package sim.courierworld.model.impl;
+package sim.courierworld.util;
 
 import java.util.Collection;
 import java.util.List;
