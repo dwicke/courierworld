@@ -1,7 +1,4 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package sim.courierworld.model.impl;
 
 import sim.courierworld.SimpleCourierWorld;
@@ -14,7 +11,7 @@ import sim.courierworld.model.IBroker;
 public class Broker implements IBroker{
 
     private int id;
-    private int deliveryRate, quote, profit;
+    private int deliveryRate, quote, profit, numUnsoldUnits, numUnitsSold;
     
     @Override
     public void setQuote(SimpleCourierWorld state) {
@@ -68,16 +65,22 @@ public class Broker implements IBroker{
 
     @Override
     public void unitSold() {
-        //To change body of generated methods, choose Tools | Templates.
-        throw new UnsupportedOperationException("Not supported yet.");
+        numUnitsSold++;
     }
 
     @Override
     public void notSold() {
-        //To change body of generated methods, choose Tools | Templates.
-        throw new UnsupportedOperationException("Not supported yet.");
+        numUnsoldUnits++;
+    }
+
+    @Override
+    public int getNumUnitsNotSold() {
+        return numUnsoldUnits;
     }
     
-    
+    @Override
+    public int getNumUnitsSold() {
+        return numUnitsSold;
+    }
     
 }

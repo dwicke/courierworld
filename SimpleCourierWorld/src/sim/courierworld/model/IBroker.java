@@ -1,7 +1,4 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package sim.courierworld.model;
 
 import sim.courierworld.SimpleCourierWorld;
@@ -34,7 +31,10 @@ public interface IBroker {
     public int getQuote();
     public void setDeliveryRate(int deliveryRate);
     public void setQuote(int quote);
-
+    public int getNumUnitsNotSold();
+    public int getNumUnitsSold();
+    
+    
     public void unitSold();
 
     public void notSold();
