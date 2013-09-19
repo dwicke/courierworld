@@ -12,6 +12,10 @@ public class Broker implements IBroker{
 
     private int id;
     private int deliveryRate, quote, profit, numUnsoldUnits, numUnitsSold;
+    // another variable I would like to add is the ability to kill off the broker
+    // if they have not profit.  So, I could start out with many many brokers
+    // with the some amount of profit. then once a broker has no profit they
+    // can't buy packages.
     
     @Override
     public void setQuote(SimpleCourierWorld state) {

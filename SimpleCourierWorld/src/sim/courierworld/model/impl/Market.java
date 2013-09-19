@@ -15,10 +15,7 @@ import sim.engine.SimState;
  */
 public class Market implements IMarket {
     
-    private int minMarketVal; // this is hidden from the brokers.  those that learn this will have a better
-    // delivery rate and will dominate the market.  Once the market perceives that the
-    // agents have setteled on that value it should increase because the market will expect the broker
-    // to pay more.  So, I want to see how well the agents adapt to the changing market minimum
+    private int minMarketVal; 
 
     public int getMinMarketVal() {
         return minMarketVal;
@@ -33,7 +30,7 @@ public class Market implements IMarket {
         setMinMarketVal(10);
         IBroker unitBroker = world.getUnitBroker();
         System.out.println("The market min is 10 and the broker " + unitBroker.toString() + " is willing to pay " + unitBroker.getDeliveryRate());
-        if (unitBroker.getDeliveryRate() >= getMinMarketVal()) {
+        if (unitBroker.getDeliveryRate() >= getMinMarketVal()) { // also could have some prob. that buy if less.
             // make emotions that the market can display to the broker to help in its learning the market min
             // could make an enum satisfied, laughable, etc...
             unitBroker.unitSold();
